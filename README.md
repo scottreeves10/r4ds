@@ -33,7 +33,5 @@ BIG, BIG kudos to Hadley and team for opensourcing the material, not only the di
 File Type | Usage
 --------- | -----
 .R        | Comments are blended book text and personal notes, code is often blended as well 
---------- | -----
 .Rmd      | Interactive markdown
---------- | -----
 .md       | Presentational markdown
