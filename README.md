@@ -32,10 +32,7 @@ BIG, BIG kudos to Hadley and team for opensourcing the material, not only the di
 
 File Type | Usage
 --------- | -----
-.R        | R script files wherein commented lines are book text and personal comments. 
-          | \*\*\* Section \*\*\*
-          | _Subsection
-          | + Particularly notable 
+.R        | Comments are blended book text and personal notes, code is often blended as well 
 --------- | -----
 .Rmd      | Interactive markdown
 --------- | -----
