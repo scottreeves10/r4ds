@@ -161,3 +161,12 @@ ggplot(mpg) +
 ```
 
 ![](Chapter1_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+Aesthetic mappings
+------------------
+
+> "The greatest value of a picture is when it forces us to notice what we never expected to see." --- John Tukey
+
+In the plot below, one group of points (highlighted in red) seems to fall outside of the linear trend. These cars have a higher mileage than you might expect. How can you explain these cars?
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-10-1.png)
