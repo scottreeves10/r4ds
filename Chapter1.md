@@ -30,14 +30,14 @@ This chapter focusses on ggplot2, one of the core members of the tidyverse. To a
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ───────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 2.2.1     ✔ purrr   0.2.4
     ## ✔ tibble  1.3.4     ✔ dplyr   0.7.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.2.0
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ──────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -119,3 +119,45 @@ ggplot(data = <DATA>) +
 ```
 
 The rest of this chapter will show you how to complete and extend this template to make different types of graphs. We will begin with the `<MAPPINGS>` component.
+
+### Exercises
+
+1.  Run `ggplot(data = mpg)`. What do you see?
+
+``` r
+ggplot(data = mpg) #An empty graph / a gray box / an empty coordinate system
+```
+
+1.  How many rows are in `mpg`? How many columns?
+
+``` r
+dim(mpg)
+```
+
+    ## [1] 234  11
+
+1.  What does the `drv` variable describe? Read the help for `?mpg` to find out.
+
+``` r
+?mpg
+```
+
+drv f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+
+1.  Make a scatterplot of `hwy` vs `cyl`.
+
+``` r
+ggplot(mpg) +
+  geom_point(aes(cyl, hwy))
+```
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+1.  What happens if you make a scatterplot of `class` vs `drv`? Why is the plot not useful?
+
+``` r
+ggplot(mpg) +
+  geom_point(aes(drv, class)) # Informs of existence, nothing more.
+```
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-9-1.png)
