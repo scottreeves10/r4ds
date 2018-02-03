@@ -248,3 +248,52 @@ Here, the color doesn't convey information about a variable, but only changes th
 <p class="caption">
 R has 25 built in shapes that are identified by numbers. There are some seeming duplicates: for example, 0, 15, and 22 are all squares. The difference comes from the interaction of the `colour` and `fill` aesthetics. The hollow shapes (0--14) have a border determined by `colour`; the solid shapes (15--18) are filled with `colour`; the filled shapes (21--24) have a border of `colour` and are filled with `fill`.
 </p>
+
+### Exercises
+
+1.  What's gone wrong with this code? Why are the points not blue?
+
+    ``` r
+    ggplot(data = mpg) + 
+      geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+    ```
+
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-16-1.png)
+
+``` r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+1.  Which variables in `mpg` are categorical? Which variables are continuous? (Hint: type `?mpg` to read the documentation for the dataset). How can you see this information when you run `mpg`?
+
+-&gt; str(mpg) Classes ‘tbl\_df’, ‘tbl’ and 'data.frame': 234 obs. of 11 variables: $ manufacturer: chr "audi" "audi" "audi" "audi" ... \# cat $ model : chr "a4" "a4" "a4" "a4" ... \# cat $ displ : num 1.8 1.8 2 2 2.8 2.8 3.1 1.8 1.8 2 ... \# cat $ year : int 1999 1999 2008 2008 1999 1999 2008 1999 1999 2008 ... \# cat $ cyl : int 4 4 4 4 6 6 6 4 4 4 ... \# cat $ trans : chr "auto(l5)" "manual(m5)" "manual(m6)" "auto(av)" ... \# cat $ drv : chr "f" "f" "f" "f" ... \# cat $ cty : int 18 21 20 21 16 18 18 18 16 20 ... \# cont $ hwy : int 29 29 31 30 26 26 27 26 25 28 ... \# cont $ fl : chr "p" "p" "p" "p" ... \# cat $ class : chr "compact" "compact" "compact" "compact" ... \# cat
+
+1.  Map a continuous variable to `color`, `size`, and `shape`. How do these aesthetics behave differently for categorical vs. continuous variables?
+
+``` r
+ggplot(mpg) +
+  geom_point(aes(displ, cty, color = hwy))
+```
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-19-1.png)
+
+``` r
+ggplot(mpg) +
+  geom_point(aes(displ, cty, size = hwy))
+```
+
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-20-1.png)
+
+``` r
+ggplot(mpg) +
+  geom_point(aes(displ, cty, shape = hwy)) #Will not work. A continuous var cannot be mapped to a shape.
+```
+
+1.  What happens if you map the same variable to multiple aesthetics?
+
+2.  What does the `stroke` aesthetic do? What shapes does it work with? (Hint: use `?geom_point`)
+
+3.  What happens if you map an aesthetic to something other than a variable name, like `aes(colour = displ < 5)`?
