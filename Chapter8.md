@@ -1,0 +1,104 @@
+Chapter 8 - Data Import with readr2
+================
+2018-02-03
+
+Introduction
+------------
+
+Working with data provided by R packages is a great way to learn the tools of data science, but at some point you want to stop learning and start working with your own data. In this chapter, you'll learn how to read plain-text rectangular files into R. Here, we'll only scratch the surface of data import, but many of the principles will translate to other forms of data. We'll finish with a few pointers to packages that are useful for other types of data.
+
+### Prerequisites
+
+In this chapter, you'll learn how to load flat files in R with the **readr** package, which is part of the core tidyverse.
+
+``` r
+library(tidyverse)
+```
+
+Getting started
+---------------
+
+Most of readr's functions are concerned with turning flat files into data frames:
+
+-   `read_csv()` reads comma delimited files, `read_csv2()` reads semicolon separated files (common in countries where `,` is used as the decimal place), `read_tsv()` reads tab delimited files, and `read_delim()` reads in files with any delimiter.
+
+-   `read_fwf()` reads fixed width files. You can specify fields either by their widths with `fwf_widths()` or their position with `fwf_positions()`. `read_table()` reads a common variation of fixed width files where columns are separated by white space.
+
+-   `read_log()` reads Apache style log files. (But also check out [webreadr](https://github.com/Ironholds/webreadr) which is built on top of `read_log()` and provides many more helpful tools.)
+
+These functions all have similar syntax: once you've mastered one, you can use the others with ease. For the rest of this chapter we'll focus on `read_csv()`. Not only are csv files one of the most common forms of data storage, but once you understand `read_csv()`, you can easily apply your knowledge to all the other functions in readr.
+
+The first argument to `read_csv()` is the most important: it's the path to the file to read.
+
+``` r
+heights <- read_csv("data/heights.csv")
+```
+
+When you run `read_csv()` it prints out a column specification that gives the name and type of each column. That's an important part of readr, which we'll come back to in \[parsing a file\].
+
+You can also supply an inline csv file. This is useful for experimenting with readr and for creating reproducible examples to share with others:
+
+``` r
+read_csv("a,b,c
+1,2,3
+4,5,6")
+```
+
+    #> # A tibble: 2 x 3
+    #>       a     b     c
+    #>   <int> <int> <int>
+    #> 1     1     2     3
+    #> 2     4     5     6
+
+In both cases `read_csv()` uses the first line of the data for the column names, which is a very common convention. There are two cases where you might want to tweak this behaviour:
+
+1.  Sometimes there are a few lines of metadata at the top of the file. You can use `skip = n` to skip the first `n` lines; or use `comment = "#"` to drop all lines that start with (e.g.) `#`.
+
+    ``` r
+    read_csv("The first line of metadata
+      The second line of metadata
+      x,y,z
+      1,2,3", skip = 2)
+    ```
+
+        #> # A tibble: 1 x 3
+        #>       x     y     z
+        #>   <int> <int> <int>
+        #> 1     1     2     3
+
+    ``` r
+    read_csv("# A comment I want to skip
+      x,y,z
+      1,2,3", comment = "#")
+    ```
+
+        #> # A tibble: 1 x 3
+        #>       x     y     z
+        #>   <int> <int> <int>
+        #> 1     1     2     3
+
+2.  The data might not have column names. You can use `col_names = FALSE` to tell `read_csv()` not to treat the first row as headings, and instead label them sequentially from `X1` to `Xn`:
+
+    ``` r
+    read_csv("1,2,3\n4,5,6", col_names = FALSE)
+    ```
+
+        #> # A tibble: 2 x 3
+        #>      X1    X2    X3
+        #>   <int> <int> <int>
+        #> 1     1     2     3
+        #> 2     4     5     6
+
+    (`"\n"` is a convenient shortcut for adding a new line. You'll learn more about it and other types of string escape in \[string basics\].)
+
+    Alternatively you can pass `col_names` a character vector which will be used as the column names:
+
+    ``` r
+    read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
+    ```
+
+        #> # A tibble: 2 x 3
+        #>       x     y     z
+        #>   <int> <int> <int>
+        #> 1     1     2     3
+        #> 2     4     5     6
