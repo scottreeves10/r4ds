@@ -21,7 +21,7 @@ Working with data provided by R packages is a great way to learn the tools of da
 
 In this chapter, you'll learn how to load flat files in R with the __readr__ package, which is part of the core tidyverse.
 
-```{r setup, message = FALSE}
+```{r setup, message=FALSE}
 library(tidyverse)
 ```
 
@@ -97,6 +97,85 @@ In both cases `read_csv()` uses the first line of the data for the column names,
     read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
     ```
     
+Another option that commonly needs tweaking is `na`: this specifies the value (or values) that are used to represent missing values in your file:
+
+```{r}
+read_csv("a,b,c\n1,2,.", na = ".")
+```
+
+This is all you need to know to read ~75% of CSV files that you'll encounter in practice. You can also easily adapt what you've learned to read tab separated files with `read_tsv()` and fixed width files with `read_fwf()`. To read in more challenging files, you'll need to learn more about how readr parses each column, turning them into R vectors.
+
+### Compared to base R
+
+If you've used R before, you might wonder why we're not using `read.csv()`. There are a few good reasons to favour readr functions over the base equivalents:
+
+* They are typically much faster (~10x) than their base equivalents.
+  Long running jobs have a progress bar, so you can see what's happening. 
+  If you're looking for raw speed, try `data.table::fread()`. It doesn't fit 
+  quite so well into the tidyverse, but it can be quite a bit faster.
+
+* They produce tibbles, they don't convert character vectors to factors,
+  use row names, or munge the column names. These are common sources of
+  frustration with the base R functions.
+
+* They are more reproducible. Base R functions inherit some behaviour from
+  your operating system and environment variables, so import code that works 
+  on your computer might not work on someone else's.
+
+### Exercises
+
+1.  What function would you use to read a file where fields were separated with  
+    "|"?
+    ```{r eval=FALSE}
+    read_delim()
+    ```
     
+1.  Apart from `file`, `skip`, and `comment`, what other arguments do
+    `read_csv()` and `read_tsv()` have in common?
+    
+    They both have the same arguments, the others being:
+    col_types, locale, na, quoted_na, quote, trim_ws, n_max, guess_max, progress
+    
+    ```{r}
+    union(names(formals(read_csv)), names(formals(read_tsv)))
+    ```
+    
+1.  What are the most important arguments to `read_fwf()`?
+    Read a fixed width file into a tibble. 
+    
+    The most important arguments are Column positions, as created by `fwf_empty()`, `fwf_widths()` or `fwf_positions()`.
+
+1.  Sometimes strings in a CSV file contain commas. To prevent them from
+    causing problems they need to be surrounded by a quoting character, like
+    `"` or `'`. By convention, `read_csv()` assumes that the quoting
+    character will be `"`, and if you want to change it you'll need to
+    use `read_delim()` instead. What arguments do you need to specify
+    to read the following text into a data frame?
+    
+    ```{r, eval = FALSE}
+    "x,y\n1,'a,b'"
+    ```
+    
+    ```{r}
+    read_delim("x,y\n1,'a,b'", delim = ",", quote = "'")
+
+    # or
+
+    read_csv("x,y\n1,'a,b'", quote = "'")
+    ```
+    
+    
+    
+1.  Identify what is wrong with each of the following inline CSV files. 
+    What happens when you run the code?
+    
+    ```{r, eval = FALSE}
+    read_csv("a,b\n1,2,3\n4,5,6")
+    read_csv("a,b,c\n1,2\n1,2,3,4")
+    read_csv("a,b\n\"1")
+    read_csv("a,b\n1,2\na,b")
+    read_csv("a;b\n1;3")
+    ```
+
     
     
