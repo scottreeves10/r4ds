@@ -30,14 +30,14 @@ This chapter focusses on ggplot2, one of the core members of the tidyverse. To a
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ───────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 2.2.1     ✔ purrr   0.2.4
     ## ✔ tibble  1.3.4     ✔ dplyr   0.7.4
     ## ✔ tidyr   0.7.2     ✔ stringr 1.2.0
     ## ✔ readr   1.1.1     ✔ forcats 0.2.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ──────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -99,7 +99,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 The plot shows a negative relationship between engine size (`displ`) and fuel efficiency (`hwy`). In other words, cars with big engines use more fuel. Does this confirm or refute your hypothesis about fuel efficiency and engine size?
 
@@ -151,7 +151,7 @@ ggplot(mpg) +
   geom_point(aes(cyl, hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 1.  What happens if you make a scatterplot of `class` vs `drv`? Why is the plot not useful?
 
@@ -160,7 +160,7 @@ ggplot(mpg) +
   geom_point(aes(drv, class)) # Informs of existence, nothing more.
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 Aesthetic mappings
 ------------------
@@ -169,13 +169,13 @@ Aesthetic mappings
 
 In the plot below, one group of points (highlighted in red) seems to fall outside of the linear trend. These cars have a higher mileage than you might expect. How can you explain these cars?
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 Let's hypothesize that the cars are hybrids. One way to test this hypothesis is to look at the `class` value for each car. The `class` variable of the `mpg` dataset classifies cars into groups such as compact, midsize, and SUV. If the outlying points are hybrids, they should be classified as compact cars or, perhaps, subcompact cars (keep in mind that this data was collected before hybrid trucks and SUVs became popular).
 
 You can add a third variable, like `class`, to a two dimensional scatterplot by mapping it to an **aesthetic**. An aesthetic is a visual property of the objects in your plot. Aesthetics include things like the size, the shape, or the color of your points. You can display a point (like the one below) in different ways by changing the values of its aesthetic properties. Since we already use the word "value" to describe data, let's use the word "level" to describe aesthetic properties. Here we change the levels of a point's size, shape, and color to make the point small, triangular, or blue:
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 You can convey information about your data by mapping the aesthetics in your plot to the variables in your dataset. For example, you can map the colors of your points to the `class` variable to reveal the class of each car.
 
@@ -184,7 +184,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, color = class))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 (If you prefer British English, like Hadley, you can use `colour` instead of `color`.)
 
@@ -201,7 +201,7 @@ ggplot(data = mpg) +
 
     ## Warning: Using size for a discrete variable is not advised.
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 Or we could have mapped `class` to the *alpha* aesthetic, which controls the transparency of the points, or the shape of the points.
 
@@ -211,7 +211,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-14-1.png" width="50%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-15-1.png" width="50%" />
 
 ``` r
 # Right
@@ -219,7 +219,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, shape = class))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-14-2.png" width="50%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-15-2.png" width="50%" />
 
 What happened to the SUVs? ggplot2 will only use six shapes at a time. By default, additional groups will go unplotted when you use the shape aesthetic.
 
@@ -234,7 +234,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 Here, the color doesn't convey information about a variable, but only changes the appearance of the plot. To set an aesthetic manually, set the aesthetic by name as an argument of your geom function; i.e. it goes *outside* of `aes()`. You'll need to pick a value that makes sense for that aesthetic:
 
@@ -258,14 +258,14 @@ R has 25 built in shapes that are identified by numbers. There are some seeming 
       geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-16-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ``` r
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 1.  Which variables in `mpg` are categorical? Which variables are continuous? (Hint: type `?mpg` to read the documentation for the dataset). How can you see this information when you run `mpg`?
 
@@ -293,14 +293,14 @@ ggplot(mpg) +
   geom_point(aes(displ, cty, color = hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 ggplot(mpg) +
   geom_point(aes(displ, cty, size = hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 ggplot(mpg) +
@@ -344,7 +344,7 @@ ggplot(data = mpg) +
   facet_wrap(~ class, nrow = 2)
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 To facet your plot on the combination of two variables, add `facet_grid()` to your plot call. The first argument of `facet_grid()` is also a formula. This time the formula should contain two variable names separated by a `~`.
 
@@ -354,7 +354,7 @@ ggplot(data = mpg) +
   facet_grid(drv ~ cyl)
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 If you prefer to not facet in the rows or columns dimension, use a `.` instead of a variable name, e.g. `+ facet_grid(. ~ cyl)`.
 
@@ -369,7 +369,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       geom_point(mapping = aes(x = drv, y = cyl))
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-24-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 3.  What plots does the following code make? What does `.` do?
 
@@ -379,7 +379,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       facet_grid(drv ~ .)
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-25-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
     ``` r
     ggplot(data = mpg) + 
@@ -387,7 +387,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       facet_grid(. ~ cyl)
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-25-2.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-26-2.png)
 
 4.  Take the first faceted plot in this section:
 
@@ -397,7 +397,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       facet_wrap(~ class, nrow = 2)
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-26-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
     What are the advantages to using faceting instead of the colour aesthetic? What are the disadvantages? How might the balance change if you had a larger dataset?
 
@@ -410,7 +410,7 @@ Geometric objects
 
 How are these two plots similar?
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-27-1.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-27-2.png" width="50%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-28-1.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-28-2.png" width="50%" />
 
 Both plots contain the same x variable, the same y variable, and both describe the same data. But the plots are not identical. Each plot uses a different visual object to represent the data. In ggplot2 syntax, we say that they use different **geoms**.
 
@@ -424,7 +424,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 # right
@@ -434,7 +434,7 @@ ggplot(data = mpg) +
 
     ## `geom_smooth()` using method = 'loess'
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-28-2.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-29-2.png)
 
 Every geom function in ggplot2 takes a `mapping` argument. However, not every aesthetic works with every geom. You could set the shape of a point, but you couldn't set the "shape" of a line. On the other hand, you *could* set the linetype of a line. `geom_smooth()` will draw a different line, with a different linetype, for each unique value of the variable that you map to linetype.
 
@@ -443,13 +443,13 @@ ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Here `geom_smooth()` separates the cars into three lines based on their `drv` value, which describes a car's drivetrain. One line describes all of the points with a `4` value, one line describes all of the points with an `f` value, and one line describes all of the points with an `r` value. Here, `4` stands for four-wheel drive, `f` for front-wheel drive, and `r` for rear-wheel drive.
 
 If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to `drv`.
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Notice that this plot contains two geoms in the same graph! If this makes you excited, buckle up. In the next section, we will learn how to place multiple geoms in the same plot.
 
@@ -462,14 +462,14 @@ ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-31-1.png" width="33%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-32-1.png" width="33%" />
 
 ``` r
 ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-31-2.png" width="33%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-32-2.png" width="33%" />
 
 ``` r
 ggplot(data = mpg) +
@@ -479,7 +479,7 @@ ggplot(data = mpg) +
   )
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-31-3.png" width="33%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-32-3.png" width="33%" />
 
 To display multiple geoms in the same plot, add multiple geom functions to `ggplot()`:
 
@@ -489,7 +489,7 @@ ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display `cty` instead of `hwy`. You'd need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to `ggplot()`. ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:
 
@@ -507,7 +507,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_smooth()
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 You can use the same idea to specify different `data` for each layer. Here, our smooth line displays just a subset of the `mpg` dataset, the subcompact cars. The local data argument in `geom_smooth()` overrides the global data argument in `ggplot()` for that layer only.
 
@@ -517,7 +517,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 (You'll learn how `filter()` works in the next chapter: for now, just know that this command selects only the subcompact cars.)
 
@@ -552,7 +552,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 6.  Recreate the R code necessary to generate the following graphs.
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-1.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-2.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-3.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-4.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-5.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-38-6.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-1.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-2.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-3.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-4.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-5.png" width="50%" /><img src="Chapter1_files/figure-markdown_github/unnamed-chunk-39-6.png" width="50%" />
 
 Statistical transformations
 ---------------------------
@@ -564,7 +564,7 @@ ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 On the x-axis, the chart displays `cut`, a variable from `diamonds`. On the y-axis, it displays count, but count is not a variable in `diamonds`! Where does count come from? Many graphs, like scatterplots, plot the raw values of your dataset. Other graphs, like bar charts, calculate new values to plot:
 
@@ -587,7 +587,7 @@ ggplot(data = diamonds) +
   stat_count(mapping = aes(x = cut))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 This works because every geom has a default stat; and every stat has a default geom. This means that you can typically use geoms without worrying about the underlying statistical transformation. There are three reasons you might need to use a stat explicitly:
 
@@ -607,7 +607,7 @@ This works because every geom has a default stat; and every stat has a default g
       geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-42-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
     (Don't worry that you haven't seen `<-` or `tribble()` before. You might be able to guess at their meaning from the context, and you'll learn exactly what they do soon!)
 
@@ -618,7 +618,7 @@ This works because every geom has a default stat; and every stat has a default g
       geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-43-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-44-1.png)
 
     To find the variables computed by the stat, look for the help section titled "computed variables".
 
@@ -634,7 +634,7 @@ This works because every geom has a default stat; and every stat has a default g
       )
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-44-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-45-1.png)
 
 ggplot2 provides over 20 stats for you to use. Each stat is a function, so you can get help in the usual way, e.g. `?stat_bin`. To see a complete list of stats, try the ggplot2 cheatsheet.
 
@@ -667,14 +667,14 @@ ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, colour = cut))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-46-1.png" width="50%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-47-1.png" width="50%" />
 
 ``` r
 ggplot(data = diamonds) + 
   geom_bar(mapping = aes(x = cut, fill = cut))
 ```
 
-<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-46-2.png" width="50%" />
+<img src="Chapter1_files/figure-markdown_github/unnamed-chunk-47-2.png" width="50%" />
 
 Note what happens if you map the fill aesthetic to another variable, like `clarity`: the bars are automatically stacked. Each colored rectangle represents a combination of `cut` and `clarity`.
 
@@ -683,7 +683,7 @@ ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, fill = clarity))
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-47-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-48-1.png)
 
 The stacking is performed automatically by the **position adjustment** specified by the `position` argument. If you don't want a stacked bar chart, you can use one of three other options: `"identity"`, `"dodge"` or `"fill"`.
 
@@ -694,14 +694,14 @@ The stacking is performed automatically by the **position adjustment** specified
       geom_bar(alpha = 1/5, position = "identity")
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-48-1.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-49-1.png" width="50%" />
 
     ``` r
     ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) + 
       geom_bar(fill = NA, position = "identity")
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-48-2.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-49-2.png" width="50%" />
 
     The identity position adjustment is more useful for 2d geoms, like points, where it is the default.
 
@@ -712,7 +712,7 @@ The stacking is performed automatically by the **position adjustment** specified
       geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-49-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-50-1.png)
 
 -   `position = "dodge"` places overlapping objects directly *beside* one another. This makes it easier to compare individual values.
 
@@ -721,11 +721,11 @@ The stacking is performed automatically by the **position adjustment** specified
       geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-50-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-51-1.png)
 
 There's one other type of adjustment that's not useful for bar charts, but it can be very useful for scatterplots. Recall our first scatterplot. Did you notice that the plot displays only 126 points, even though there are 234 observations in the dataset?
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-51-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-52-1.png)
 
 The values of `hwy` and `displ` are rounded so the points appear on a grid and many points overlap each other. This problem is known as **overplotting**. This arrangement makes it hard to see where the mass of the data is. Are the data points spread equally throughout the graph, or is there one special combination of `hwy` and `displ` that contains 109 values?
 
@@ -736,7 +736,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
 ```
 
-![](Chapter1_files/figure-markdown_github/unnamed-chunk-52-1.png)
+![](Chapter1_files/figure-markdown_github/unnamed-chunk-53-1.png)
 
 Adding randomness seems like a strange way to improve your plot, but while it makes your graph less accurate at small scales, it makes your graph *more* revealing at large scales. Because this is such a useful operation, ggplot2 comes with a shorthand for `geom_point(position = "jitter")`: `geom_jitter()`.
 
@@ -751,7 +751,7 @@ To learn more about a position adjustment, look up the help page associated with
       geom_point()
     ```
 
-    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-53-1.png)
+    ![](Chapter1_files/figure-markdown_github/unnamed-chunk-54-1.png)
 
 2.  What parameters to `geom_jitter()` control the amount of jittering?
 
@@ -771,7 +771,7 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
       geom_boxplot()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-54-1.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-55-1.png" width="50%" />
 
     ``` r
     ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
@@ -779,7 +779,7 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
       coord_flip()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-54-2.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-55-2.png" width="50%" />
 
 -   `coord_quickmap()` sets the aspect ratio correctly for maps. This is very important if you're plotting spatial data with ggplot2 (which unfortunately we don't have the space to cover in this book).
 
@@ -790,7 +790,7 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
       geom_polygon(fill = "white", colour = "black")
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-55-1.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-56-1.png" width="50%" />
 
     ``` r
     ggplot(nz, aes(long, lat, group = group)) +
@@ -798,7 +798,7 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
       coord_quickmap()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-55-2.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-56-2.png" width="50%" />
 
 -   `coord_polar()` uses polar coordinates. Polar coordinates reveal an interesting connection between a bar chart and a Coxcomb chart.
 
@@ -815,13 +815,13 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
     bar + coord_flip()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-56-1.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-57-1.png" width="50%" />
 
     ``` r
     bar + coord_polar()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-56-2.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-57-2.png" width="50%" />
 
 ### Exercises
 
@@ -840,7 +840,7 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
       coord_fixed()
     ```
 
-    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-57-1.png" width="50%" />
+    <img src="Chapter1_files/figure-markdown_github/unnamed-chunk-58-1.png" width="50%" />
 
 The layered grammar of graphics
 -------------------------------
