@@ -157,6 +157,8 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     "x,y\n1,'a,b'"
     ```
 
+    You need to specify `quote = "'"` in:
+
     ``` r
     read_delim("x,y\n1,'a,b'", delim = ",", quote = "'")
     ```
@@ -166,9 +168,9 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
         #>   <int> <chr>
         #> 1     1   a,b
 
-    ``` r
-    # or
+    or
 
+    ``` r
     read_csv("x,y\n1,'a,b'", quote = "'")
     ```
 
@@ -186,3 +188,60 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     read_csv("a,b\n1,2\na,b")
     read_csv("a;b\n1;3")
     ```
+
+    ``` r
+    read_csv("a,b\n1,2,3\n4,5,6")      # only two columns
+    ```
+
+        #> Warning: 2 parsing failures.
+        #> row # A tibble: 2 x 5 col     row   col  expected    actual         file expected   <int> <chr>     <chr>     <chr>        <chr> actual 1     1  <NA> 2 columns 3 columns literal data file 2     2  <NA> 2 columns 3 columns literal data
+
+        #> # A tibble: 2 x 2
+        #>       a     b
+        #>   <int> <int>
+        #> 1     1     2
+        #> 2     4     5
+
+    ``` r
+    read_csv("a,b,c\n1,2\n1,2,3,4") #(1, 3) is missing and (1, 4) is truncated
+    ```
+
+        #> Warning: 2 parsing failures.
+        #> row # A tibble: 2 x 5 col     row   col  expected    actual         file expected   <int> <chr>     <chr>     <chr>        <chr> actual 1     1  <NA> 3 columns 2 columns literal data file 2     2  <NA> 3 columns 4 columns literal data
+
+        #> # A tibble: 2 x 3
+        #>       a     b     c
+        #>   <int> <int> <int>
+        #> 1     1     2    NA
+        #> 2     1     2     3
+
+    ``` r
+    read_csv("a,b\n\"1") # inappropriate extra double quote in string input
+    ```
+
+        #> Warning: 2 parsing failures.
+        #> row # A tibble: 2 x 5 col     row   col                     expected    actual         file expected   <int> <chr>                        <chr>     <chr>        <chr> actual 1     1     a closing quote at end of file           literal data file 2     1  <NA>                    2 columns 1 columns literal data
+
+        #> # A tibble: 1 x 2
+        #>       a     b
+        #>   <int> <chr>
+        #> 1     1  <NA>
+
+    ``` r
+    read_csv("a,b\n1,2\na,b") # mismatched types
+    ```
+
+        #> # A tibble: 2 x 2
+        #>       a     b
+        #>   <chr> <chr>
+        #> 1     1     2
+        #> 2     a     b
+
+    ``` r
+    read_csv("a;b\n1;3") # should use read_csv2() for semi-colon delims
+    ```
+
+        #> # A tibble: 1 x 1
+        #>   `a;b`
+        #>   <chr>
+        #> 1   1;3
