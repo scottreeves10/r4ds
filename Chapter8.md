@@ -20,9 +20,15 @@ Getting started
 
 Most of readr's functions are concerned with turning flat files into data frames:
 
+#### read\_csv(), read\_csv2(), read\_tsv(), read\_delim()
+
 -   `read_csv()` reads comma delimited files, `read_csv2()` reads semicolon separated files (common in countries where `,` is used as the decimal place), `read_tsv()` reads tab delimited files, and `read_delim()` reads in files with any delimiter.
 
+#### read\_fwf(), fwf\_widths(), fwf\_positions(), read\_table()
+
 -   `read_fwf()` reads fixed width files. You can specify fields either by their widths with `fwf_widths()` or their position with `fwf_positions()`. `read_table()` reads a common variation of fixed width files where columns are separated by white space.
+
+#### read\_log()
 
 -   `read_log()` reads Apache style log files. (But also check out [webreadr](https://github.com/Ironholds/webreadr) which is built on top of `read_log()` and provides many more helpful tools.)
 
@@ -38,6 +44,8 @@ When you run `read_csv()` it prints out a column specification that gives the na
 
 You can also supply an inline csv file. This is useful for experimenting with readr and for creating reproducible examples to share with others:
 
+#### inline csv file
+
 ``` r
 read_csv("a,b,c
 1,2,3
@@ -51,6 +59,8 @@ read_csv("a,b,c
     #> 2     4     5     6
 
 In both cases `read_csv()` uses the first line of the data for the column names, which is a very common convention. There are two cases where you might want to tweak this behaviour:
+
+#### skip = n, comment = "\#"
 
 1.  Sometimes there are a few lines of metadata at the top of the file. You can use `skip = n` to skip the first `n` lines; or use `comment = "#"` to drop all lines that start with (e.g.) `#`.
 
@@ -79,29 +89,35 @@ In both cases `read_csv()` uses the first line of the data for the column names,
 
 2.  The data might not have column names. You can use `col_names = FALSE` to tell `read_csv()` not to treat the first row as headings, and instead label them sequentially from `X1` to `Xn`:
 
-    ``` r
+#### col\_names = FALSE
+
+    ```r
     read_csv("1,2,3\n4,5,6", col_names = FALSE)
     ```
 
-        #> # A tibble: 2 x 3
-        #>      X1    X2    X3
-        #>   <int> <int> <int>
-        #> 1     1     2     3
-        #> 2     4     5     6
+    ```
+    #> # A tibble: 2 x 3
+    #>      X1    X2    X3
+    #>   <int> <int> <int>
+    #> 1     1     2     3
+    #> 2     4     5     6
+    ```
 
-    (`"\n"` is a convenient shortcut for adding a new line. You'll learn more about it and other types of string escape in \[string basics\].)
+(`"\n"` is a convenient shortcut for adding a new line. You'll learn more about it and other types of string escape in \[string basics\].)
 
-    Alternatively you can pass `col_names` a character vector which will be used as the column names:
+Alternatively you can pass `col_names` a character vector which will be used as the column names:
 
-    ``` r
+    ```r
     read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
     ```
 
-        #> # A tibble: 2 x 3
-        #>       x     y     z
-        #>   <int> <int> <int>
-        #> 1     1     2     3
-        #> 2     4     5     6
+    ```
+    #> # A tibble: 2 x 3
+    #>       x     y     z
+    #>   <int> <int> <int>
+    #> 1     1     2     3
+    #> 2     4     5     6
+    ```
 
 Another option that commonly needs tweaking is `na`: this specifies the value (or values) that are used to represent missing values in your file:
 
@@ -216,7 +232,7 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
         #> 2     1     2     3
 
     ``` r
-    read_csv("a,b\n\"1") # inappropriate extra double quote in string input
+    read_csv("a,b\n\"1") # inline csv file input contains misplaced quote
     ```
 
         #> Warning: 2 parsing failures.
@@ -245,3 +261,78 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
         #>   `a;b`
         #>   <chr>
         #> 1   1;3
+
+Parsing a vector
+----------------
+
+Before we get into the details of how readr reads files from disk, we need to take a little detour to talk about the `parse_*()` functions. These functions take a **character vector** and return a more specialised vector like a logical, integer, or date:
+
+#### parse\_logical(), parse\_integer(), parse\_date()
+
+``` r
+str(parse_logical(c("TRUE", "FALSE", "NA")))
+```
+
+    #>  logi [1:3] TRUE FALSE NA
+
+``` r
+str(parse_integer(c("1", "2", "3")))
+```
+
+    #>  int [1:3] 1 2 3
+
+``` r
+str(parse_date(c("2010-01-01", "1979-10-14")))
+```
+
+    #>  Date[1:2], format: "2010-01-01" "1979-10-14"
+
+These functions are useful in their own right, but are also an important building block for readr. Once you've learned how the individual parsers work in this section, we'll circle back and see how they fit together to parse a complete file in the next section.
+
+Like all functions in the tidyverse, the `parse_*()` functions are uniform: the first argument is a character vector to parse, and the `na` argument specifies which strings should be treated as missing:
+
+``` r
+parse_integer(c("1", "231", ".", "456"), na = ".")
+```
+
+    #> [1]   1 231  NA 456
+
+If parsing fails, you'll get a warning:
+
+``` r
+x <- parse_integer(c("123", "345", "abc", "123.45"))
+```
+
+    #> Warning in rbind(names(probs), probs_f): number of columns of result is not
+    #> a multiple of vector length (arg 1)
+
+    #> Warning: 2 parsing failures.
+    #> row # A tibble: 2 x 4 col     row   col               expected actual expected   <int> <int>                  <chr>  <chr> actual 1     3    NA             an integer    abc row 2     4    NA no trailing characters    .45
+
+And the failures will be missing in the output:
+
+``` r
+x
+```
+
+    #> [1] 123 345  NA  NA
+    #> attr(,"problems")
+    #> # A tibble: 2 x 4
+    #>     row   col               expected actual
+    #>   <int> <int>                  <chr>  <chr>
+    #> 1     3    NA             an integer    abc
+    #> 2     4    NA no trailing characters    .45
+
+If there are many parsing failures, you'll need to use `problems()` to get the complete set. This returns a tibble, which you can then manipulate with dplyr.
+
+#### problems()
+
+``` r
+problems(x)
+```
+
+    #> # A tibble: 2 x 4
+    #>     row   col               expected actual
+    #>   <int> <int>                  <chr>  <chr>
+    #> 1     3    NA             an integer    abc
+    #> 2     4    NA no trailing characters    .45
