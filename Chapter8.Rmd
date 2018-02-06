@@ -2,6 +2,7 @@
 title: "Chapter 8 - Data Import with readr2"
 date: 2018-02-03
 output: github_document
+# output: html_document
 ---
 
 ```{r knitr, include=FALSE}
@@ -194,7 +195,7 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     ```
 
     ```{r warning=TRUE}
-    read_csv("a,b,c\n1,2\n1,2,3,4") #(1, 3) is missing and (1, 4) is truncated
+    read_csv("a,b,c\n1,2\n1,2,3,4") # (1,3) is missing and (2,4) is truncated
     ```
     
     ```{r warning=TRUE}
@@ -249,4 +250,70 @@ If there are many parsing failures, you'll need to use `problems()` to get the c
 problems(x)
 ```
 
+Using parsers is mostly a matter of understanding what's available and how they deal with different types of input. There are eight particularly important parsers:
+
+1.  `parse_logical()` and `parse_integer()` parse logicals and integers
+    respectively. There's basically nothing that can go wrong with these
+    parsers so I won't describe them here further.
     
+1.  `parse_double()` is a strict numeric parser, and `parse_number()` 
+    is a flexible numeric parser. These are more complicated than you might
+    expect because different parts of the world write numbers in different
+    ways.
+    
+1.  `parse_character()` seems so simple that it shouldn't be necessary. But
+    one complication makes it quite important: character encodings.
+
+1.  `parse_factor()` create factors, the data structure that R uses to represent
+    categorical variables with fixed and known values.
+
+1.  `parse_datetime()`, `parse_date()`, and `parse_time()` allow you to
+    parse various date & time specifications. These are the most complicated
+    because there are so many different ways of writing dates.
+
+The following sections describe these parsers in more detail.
+
+### Numbers
+
+It seems like it should be straightforward to parse a number, but three problems make it tricky:
+
+1. People write numbers differently in different parts of the world.
+   For example, some countries use `.` in between the integer and fractional 
+   parts of a real number, while others use `,`.
+   
+1. Numbers are often surrounded by other characters that provide some
+   context, like "$1000" or "10%".
+
+1. Numbers often contain "grouping" characters to make them easier to read, 
+   like "1,000,000", and these grouping characters vary around the world.
+
+To address the first problem, readr has the notion of a "locale", an object that specifies parsing options that differ from place to place. When parsing numbers, the most important option is the character you use for the decimal mark. You can override the default value of `.` by creating a new locale and setting the `decimal_mark` argument:
+
+```{r}
+parse_double("1.23")
+parse_double("1,23", locale = locale(decimal_mark = ","))
+```
+
+readr's default locale is US-centric, because generally R is US-centric (i.e. the documentation of base R is written in American English). An alternative approach would be to try and guess the defaults from your operating system. This is hard to do well, and, more importantly, makes your code fragile: even if it works on your computer, it might fail when you email it to a colleague in another country.
+
+`parse_number()` addresses the second problem: it ignores non-numeric characters before and after the number. This is particularly useful for currencies and percentages, but also works to extract numbers embedded in text.
+
+```{r}
+parse_number("$100")
+parse_number("20%")
+parse_number("It cost $123.45")
+```
+
+The final problem is addressed by the combination of `parse_number()` and the locale as `parse_number()` will ignore the "grouping mark":
+
+```{r}
+# Used in America
+parse_number("$123,456,789")
+
+# Used in many parts of Europe
+parse_number("123.456.789", locale = locale(grouping_mark = "."))
+
+# Used in Switzerland
+parse_number("123'456'789", locale = locale(grouping_mark = "'"))
+```
+
