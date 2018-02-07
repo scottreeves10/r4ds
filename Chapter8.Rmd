@@ -136,7 +136,7 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
 ### Exercises
 
 1.  What function would you use to read a file where fields were separated with  
-    "|"?
+    "|"? 
     ```{r eval=FALSE}
     read_delim()
     ```
@@ -469,30 +469,33 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
 ### Exercises
 
 1.  What are the most important arguments to `locale()`? 
-    
-    - When parsing numbers, the most important option is the character you use for the decimal mark. Next would be grouping_mark.
-    
 
+    When parsing numbers, the most important option is the character you use for the decimal mark. Next would be grouping_mark. 
+    
 1.  What happens if you try and set `decimal_mark` and `grouping_mark` 
     to the same character? What happens to the default value of 
     `grouping_mark` when you set `decimal_mark` to ","? What happens
     to the default value of `decimal_mark` when you set the `grouping_mark`
     to "."?
 
-    Try and set `decimal_mark` and `grouping_mark` to the same character: - the fractional digits become part of the whole
-
-```{r}
-parse_number("123,456,789,28", locale = locale(grouping_mark = ","), (decimal_mark = ","))
-```
-
-   If `decimal_mark` is set to ",", then it appears `grouping_mark` is ignored.
-
-```{r}
-parse_number("123,456,789,28", locale = locale(decimal_mark = ","))
-
-```
-  
+    ```{r}
+    # When `decimal_mark` and `grouping_mark` to the same character the fractional
+    # digits become part of the whole
+    # 
+    parse_number("123,456,789,28", locale = locale(grouping_mark = ","), (decimal_mark = ","))
+    ```
     
+    ```{r}
+    # If `decimal_mark` is set to ",", then `grouping_mark` is superceded.
+    # 
+    parse_number("123,456,789,28", locale = locale(decimal_mark = ","))
+    ```
+
+    ```{r}
+    # If `grouping_mark` is set to ".", then `decimal_mark` is superceded.
+    # 
+    parse_number("123,456,789.28", locale = locale(grouping_mark = "."))
+    ```
 
 1.  I didn't discuss the `date_format` and `time_format` options to
     `locale()`. What do they do? Construct an example that shows when 
