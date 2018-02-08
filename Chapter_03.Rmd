@@ -8,7 +8,7 @@ output: html_document
 set.seed(1014)
 #options(digits = 3)
 
-knitr::opts_chunk$set(comment = "#>",collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 6,fig.asp = 0.618)
+knitr::opts_chunk$set(comment = "#>",highlight=FALSE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 6,fig.asp = 0.618)
 
 options(dplyr.print_min = 6, dplyr.print_max = 6)
 ```
@@ -21,9 +21,11 @@ Visualisation is an important tool for insight generation, but it is rare that y
 
 In this chapter we're going to focus on how to use the dplyr package, another core member of the tidyverse. We'll illustrate the key ideas using data from the nycflights13 package, and use ggplot2 to help us understand the data. 
 
-```{r setup, message = FALSE}
+```{r setup, message = TRUE}
 library(nycflights13)
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
 ```
 
 Take careful note of the conflicts message that's printed when you load the tidyverse. It tells you that dplyr overwrites some functions in base R. If you want to use the base version of these functions after loading dplyr, you'll need to use their full names: `stats::filter()` and `stats::lag()`.
@@ -207,8 +209,25 @@ filter(df, is.na(x) | x > 1)
 1.  Find all flights that
 
     1. Had an arrival delay of two or more hours
+    
+        ```{r eval=FALSE}
+        filter(flights, arr_delay > 120)
+        ```
+        
     1. Flew to Houston (`IAH` or `HOU`)
+    
+        ```{r eval=FALSE}
+        filter(flights, dest == "IAH" | dest == "HOU")
+        ```
+    
     1. Were operated by United, American, or Delta
+    
+        ```{r eval=FALSE}
+        filter(flights, carrier =="AA" | carrier == "UA" | carrier =="DL")
+        # OR
+        filter(flights, carrier %in% c("AA", "UA", "DL"))
+        ```
+        
     1. Departed in summer (July, August, and September)
     1. Arrived more than two hours late, but didn't leave late
     1. Were delayed by at least an hour, but made up over 30 minutes in flight
