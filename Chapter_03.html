@@ -312,9 +312,12 @@ filter(df, x &gt; 1)
 <pre class="text"><code>filter(flights, dest == &quot;IAH&quot; | dest == &quot;HOU&quot;)</code></pre></li>
 <li><p>Were operated by United, American, or Delta</p>
 <pre class="text"><code>filter(flights, carrier ==&quot;AA&quot; | carrier == &quot;UA&quot; | carrier ==&quot;DL&quot;)
+
 # OR
+
 filter(flights, carrier %in% c(&quot;AA&quot;, &quot;UA&quot;, &quot;DL&quot;))</code></pre></li>
-<li>Departed in summer (July, August, and September)</li>
+<li><p>Departed in summer (July, August, and September)</p>
+<pre class="text"><code>filter(flights, month %in% c(7, 8, 9))</code></pre></li>
 <li>Arrived more than two hours late, but didn’t leave late</li>
 <li>Were delayed by at least an hour, but made up over 30 minutes in flight</li>
 <li><p>Departed between midnight and 6am (inclusive)</p></li>

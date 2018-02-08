@@ -224,11 +224,18 @@ filter(df, is.na(x) | x > 1)
     
         ```{r eval=FALSE}
         filter(flights, carrier =="AA" | carrier == "UA" | carrier =="DL")
+        
         # OR
+        
         filter(flights, carrier %in% c("AA", "UA", "DL"))
         ```
         
     1. Departed in summer (July, August, and September)
+    
+        ```{r eval=FALSE}
+        filter(flights, month %in% c(7, 8, 9))
+        ```
+    
     1. Arrived more than two hours late, but didn't leave late
     1. Were delayed by at least an hour, but made up over 30 minutes in flight
     1. Departed between midnight and 6am (inclusive)
