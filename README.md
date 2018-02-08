@@ -27,7 +27,7 @@ BIG, BIG kudos to Hadley and team for open-sourcing the material, not only the d
 ## Files
 
 File Type | Usage
---------- | -----.
+--------- | -----
 .R | Comments are book text and personal notes, plus code 
 .Rmd      | Interactive markdown
 .md       | Presentation-al markdown (tried this, but better to knitr html_document with self contained images to post to website)
