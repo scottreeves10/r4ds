@@ -470,7 +470,7 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
 
 1.  What are the most important arguments to `locale()`? 
 
-    When parsing numbers, the most important option is the character you use for the decimal mark. Next would be grouping_mark. 
+    When parsing numbers, the most important arguments to `locale()` are `decimal mark` and grouping_mark. 
     
 1.  What happens if you try and set `decimal_mark` and `grouping_mark` 
     to the same character? What happens to the default value of 
