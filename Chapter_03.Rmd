@@ -8,7 +8,7 @@ output: html_document
 set.seed(1014)
 #options(digits = 3)
 
-knitr::opts_chunk$set(comment = "#>",highlight=FALSE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 6,fig.asp = 0.618)
+knitr::opts_chunk$set(comment = "#>",highlight=FALSE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 8,fig.asp = 0.618)
 
 options(dplyr.print_min = 6, dplyr.print_max = 6)
 ```
@@ -1147,12 +1147,180 @@ daily %>%
 
 1.  Look at the number of cancelled flights per day. Is there a pattern?
     Is the proportion of cancelled flights related to the average delay?
+    
+    Yes, there is a pattern. On a typical day in 2013, the number of flights cancelled was less than .5% and the average dpearture delay was less than 15 minutes. 
+ 
+    However, on both typical days and atypical days, as the percentage of cancellations increases, so does the average delay. This trend holds up to 25% cancellations, whereafter the number of observations becomes exceedingly smaller. 
+ 
+    After 25% cancellations on a given day, one might assume only flights which are not affected extraordinary circumstances are permitted to fly, and therefore are not impacted by excessive delay. 
+
+    ```{r}
+    flights %>%
+      group_by(year, month, day) %>%
+      summarize(num_flights = n(),
+                num_cancelled = sum(is.na(dep_delay)),
+                pct_cancelled = mean(is.na(dep_delay)),
+                avg_delay     = mean(dep_delay, na.rm = TRUE)
+                ) %>%
+      ggplot(mapping = aes(x = pct_cancelled * 100, y = avg_delay)) +
+      geom_point(aes(alpha = 1/20))+
+      geom_smooth(se = FALSE)
+    ```
+
+    So, out of curiousity, which days had an inordinate number of cancellations, more than 50%?
+
+    ```{r}   
+    flights %>%
+      group_by(year, month, day) %>%
+      summarize(num_flights = n(),
+                num_cancelled = sum(is.na(dep_delay)),
+                pct_cancelled = mean(is.na(dep_delay)),
+                avg_delay     = mean(dep_delay, na.rm = TRUE)
+                ) %>%
+      filter(pct_cancelled > .5)
+    ```
+
+    February 8th and 9th, 2013. What was in the news? Blizzard in the northeast US https://www.theguardian.com/world/2013/feb/08/4000-flights-cancelled-snow-us
+
 
 1.  Which carrier has the worst delays? Challenge: can you disentangle the
     effects of bad airports vs. bad carriers? Why/why not? (Hint: think about
     `flights %>% group_by(carrier, dest) %>% summarise(n())`)
+    
+    ```{r}
+    not_cancelled %>%
+      group_by(carrier) %>%
+      summarize(
+        avg_dep_delay = mean(dep_delay),
+        avg_arr_delay = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay))
+    
+    # Carrier F9 has the worst average arrival delay, being 21.92 minutes
+
+    # plot
+    plot.data <- not_cancelled %>%
+    group_by(carrier) %>%
+    summarize(
+    avg_dep_delay = mean(dep_delay),
+    avg_arr_delay = mean(arr_delay)
+    )
+    ggplot(plot.data) +
+    geom_col(mapping = aes(x = carrier, y = avg_arr_delay))
+
+    # effects of bad airports vs. bad carriers
+    # we already know carrier F9 has the worst average arrival delay
+
+    # which combination of carrier and destination has the worst average arrival delay?
+
+    not_cancelled %>%
+      group_by(carrier, dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_per_dest = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay_per_dest))
+    
+    # UA into STL, but only 2 flights. let's look at sample of 20 or more flights
+    
+    not_cancelled %>%
+      group_by(carrier, dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_per_dest = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay_per_dest)) %>%
+      filter(num_flights >= 20)
+    
+    # EV into CAE tops the list. In fact carrier EV holds the 6 of the top 7 spots.
+    # F9 shows up at number 9 into DEN.
+
+    # which airport has the worst average arrival delay?
+    not_cancelled %>%
+      group_by(dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_at_dest = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay_at_dest))
+    # Indeed CAE has the worst average arrival delay of any destination
+
+    # So what might be causing F9 to top the list of carriers with the worst average arrival delay?
+    
+    not_cancelled %>%
+      group_by(carrier, dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_per_dest = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay_per_dest)) %>%
+      filter(carrier == 'F9')
+    
+    # Carrier F9 only flies into DEN
+    
+    # What about carrier EV?
+    
+    not_cancelled %>%
+      group_by(carrier, dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_per_dest = mean(arr_delay)
+      ) %>%
+      arrange(desc(avg_arr_delay_per_dest)) %>%
+      filter(carrier == 'EV')
+    
+    # EV flies into many destinations where their avg arrival delay is relative very high, however
+    # it also flies into 51 more destinations. As yet, we have not compared the delays weighted against
+    # number of flights, but let's plot EV's delays per destination.
+
+    not_cancelled %>% 
+      group_by(carrier, dest) %>%
+      summarize(
+        num_flights = n(),
+        avg_arr_delay_per_dest = mean(arr_delay)
+      ) %>%
+      filter(carrier == 'EV') %>%
+      ggplot(mapping = aes(x = dest, y = avg_arr_delay_per_dest)) +
+      geom_col() +
+      coord_flip()
+    
+    # Plot shows most of carrier EV's average arrival delays into its 61 destinations are 20 minutes or less.
+    
+    # While it has a relatively high average arrival delay as a carrier, and it also holds many top spots 
+    
+    # For carrier-destination combo's, EV's overall average arrival delay is tempered by the fact it has 61 diverse destinations.
+
+    ```
 
 1.  What does the `sort` argument to `count()` do. When might you use it?
+
+    Sort = TRUE will sort output in descending order of n
+
+    ```{r}
+    not_cancelled %>%
+      count(dest, sort = TRUE)
+    ```
+    Which is easier than:
+
+    ```{r}    
+    not_cancelled %>%
+      group_by(dest) %>%
+      summarize(n =n()) %>%
+      arrange(desc(n))
+    ```
+
+    Just for not-so-much fun. Ouch - maximum arrival delays at each respective destination: 
+    
+    ```{r}
+    not_cancelled %>%
+      group_by(dest)%>%
+      summarize(
+        n = n(),
+        max_arr_delay = max(arr_delay)
+        )%>%
+      arrange(desc(max_arr_delay))
+    ```
+
 
 ## Grouped mutates (and filters)
 
