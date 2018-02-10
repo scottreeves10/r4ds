@@ -21,7 +21,7 @@ Visualisation is an important tool for insight generation, but it is rare that y
 
 In this chapter we're going to focus on how to use the dplyr package, another core member of the tidyverse. We'll illustrate the key ideas using data from the nycflights13 package, and use ggplot2 to help us understand the data. 
 
-#### Libraries
+#### Libraries ***
 
 ```{r setup, message = TRUE}
 library(nycflights13)
@@ -1454,19 +1454,19 @@ Functions that work most naturally in grouped mutates and filters are known as  
 
     Tailnum __N988AT__ has the worst on-time record in terms of percentage of late arrivals _for more than twenty flights_. 
     
-    <!-- The first output below shows N988AT at the top of a descending arrangment. The next output shows N988AT as specifically the top 1.  -->
-
-    <!-- ```{r} -->
-    <!-- not_cancelled %>%  -->
-    <!--   group_by(tailnum) %>% -->
-    <!--   summarise( -->
-    <!--     n= n(), -->
-    <!--     late = sum(arr_delay > 0), -->
-    <!--     pct_arr_delay =  late / n -->
-    <!--     ) %>%  -->
-    <!--   filter(n > 20) %>%  -->
-    <!--   arrange(desc(pct_arr_delay)) -->
-    <!-- ``` -->
+    ```{r}
+    not_cancelled %>% 
+      group_by(tailnum) %>% 
+      summarise(
+        n = n(),
+        pct_arr_delay = sum(arr_delay > 0) / n()
+      ) %>% 
+      filter(n > 20) %>% 
+      filter(min_rank(desc(pct_arr_delay)) <= 3) %>% 
+      arrange(desc(pct_arr_delay))
+    ```
+    
+    Alternately, using top_n(1, x), which is the same as if using above filter(min_rank(desc(x)) <= 1)
     
     ```{r}
     not_cancelled %>% 
@@ -1480,23 +1480,24 @@ Functions that work most naturally in grouped mutates and filters are known as  
       top_n(1, pct_arr_delay)
     ```
    
-    The chunk below does not work for the purpose of this excercise. However, it is kept for the purpose of illustrating that max() applies to each summarized group row - i.e., rather than the column vector of the variable of all the summarized rows.  
+   
+1.  What time of day should you fly if you want to avoid delays as much
+    as possible?
+    
+    On average, avoid __7:00PM to 10:00 PM__ if you want to avoid delays as much
+    as possible.
     
     ```{r}
     not_cancelled %>% 
-      group_by(tailnum) %>%
+      group_by(hour) %>% 
       summarise(
-        n= n(),
-        late = sum(arr_delay > 0),
-        pct_arr_delay =  late / n,
-        worst = max(pct_arr_delay)
-        ) %>% 
-      filter(n > 20)
+        avg_dep_delay = mean(dep_delay)
+      ) %>% 
+      filter(min_rank(desc(avg_dep_delay)) <= 4) %>% 
+      arrange(desc(avg_dep_delay))
     ```
     
 
-1.  What time of day should you fly if you want to avoid delays as much
-    as possible?
     
 1.  For each destination, compute the total minutes of delay. For each, 
     flight, compute the proportion of the total delay for its destination.
