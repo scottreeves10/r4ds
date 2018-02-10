@@ -1,12 +1,12 @@
 ---
 title: "Chapter 3 - Data Transformation with dplyr"
-date: 2018-01-18
+#date: 2018-01-18
 output: 
   html_document: 
     toc: true
     toc_float: true
-    number_sections: true
-    code_folding: show
+    #number_sections: true
+    #code_folding: show
 ---
 
 ```{r options, include=FALSE}
@@ -90,7 +90,7 @@ All verbs work similarly:
 
 Together these properties make it easy to chain together multiple simple steps to achieve a complex result. Let's dive in and see how these verbs work.
 
-## Filter() - Filter rows with `filter()` {#filter}
+## Filter rows with `filter()` {#filter}
 
 `filter()` allows you to subset observations based on their values. The first argument is the name of the data frame. The second and subsequent arguments are the expressions that filter the data frame. For example, we can select all flights on January 1st with:
 
@@ -306,7 +306,7 @@ filter(df, is.na(x) | x > 1)
     ```
     
 
-## Arrange() - Arrange rows with `arrange()`
+## Arrange rows with `arrange()`
 
 `arrange()` works similarly to `filter()` except that instead of selecting rows, it changes their order. It takes a data frame and a set of column names (or more complicated expressions) to order by. If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns:
 
@@ -363,7 +363,7 @@ arrange(df, desc(x))
       
     ```
 
-## Select() - Select columns with `select()` {#select}
+## Select columns with `select()` {#select}
 
 It's not uncommon to get datasets with hundreds or even thousands of variables. In this case, the first challenge is often narrowing in on the variables you're actually interested in. `select()` allows you to rapidly zoom in on a useful subset using operations based on the names of the variables.
 
@@ -474,7 +474,7 @@ select(flights, time_hour, air_time, everything())
     
     ```
 
-## Mutate() - Add new variables with `mutate()` {#mutate}
+## Add new variables with `mutate()` {#mutate}
 
 Besides selecting sets of existing columns, it's often useful to add new columns that are functions of existing columns. That's the job of `mutate()`. 
 
@@ -714,7 +714,7 @@ ggplot(flights, aes(air_time - airtime2)) + geom_histogram()
 
     Base R provides the following, with angles in radians `cos(x)`, `sin(x)`, `tan(x)`, `acos(x)`, `asin(x)`, `atan(x)`, `atan2(y, x)`, `cospi(x)`, `sinpi(x)`, `tanpi(x)`
 
-## Summarize() - Grouped summaries with `summarise()`
+## Grouped summaries with `summarise()`
 
 The last key verb is `summarise()`. It collapses a data frame to a single row:
 
@@ -735,7 +735,7 @@ summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
 
 Together `group_by()` and `summarise()` provide one of the tools that you'll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.
 
-### Pipe %>% Combining multiple operations with the pipe
+### Combine multiple operations with the Pipe
 
 Imagine that we want to explore the relationship between the distance and average delay for each location. Using what you know about dplyr, you might write code like this:
 
