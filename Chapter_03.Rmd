@@ -1575,6 +1575,22 @@ Functions that work most naturally in grouped mutates and filters are known as  
     the air time a flight relative to the shortest flight to that destination.
     Which flights were most delayed in the air?
     
+    Using the he 68–95–99.7 rule as a naive guidline, there are 19 out of 327,000 non-cancelled flights for which the recorded shortest air_time is outside the band of three standard deviations. 
+    
+    ```{r}
+    not_cancelled %>%
+      group_by(origin, dest) %>% 
+      mutate(
+        average = mean(air_time, na.rm = TRUE),
+        std_dev = sd(air_time),
+        x3std_dev = 3 * std_dev,
+        avg_less_x3_sd = average - x3std_dev
+      ) %>% 
+      filter(min_rank(air_time) <= 1, air_time < avg_less_x3_sd) %>% 
+      select(origin, dest, average, std_dev, x3std_dev, avg_less_x3_sd, shortest = air_time) %>% 
+      arrange(shortest)
+    ```
+    
 1.  Find all destinations that are flown by at least two carriers. Use that
     information to rank the carriers.
 
