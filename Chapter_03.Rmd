@@ -1555,6 +1555,21 @@ Functions that work most naturally in grouped mutates and filters are known as  
     to allow earlier flights to leave. Using `lag()` explore how the delay
     of a flight is related to the delay of the immediately preceding flight.
     
+    Airports can be big. It may be helpful to have gate information. Lacking gate information, let's try using as a proxy one carrier at one origin since carriers tend to be assigned one or more specific gates. 
+    
+    ```{r warning=FALSE}
+    
+    not_cancelled %>%
+      filter(carrier == "DL", origin == 'LGA', month == 1, dep_delay > 0) %>% 
+      arrange(month, day, sched_dep_time) %>% 
+      mutate(
+        prior_delay = lag(dep_delay)
+      ) %>% 
+      ggplot() +
+      geom_smooth(aes(dep_delay, prior_delay), se = FALSE)
+    
+    ```
+    
 1.  Look at each destination. Can you find flights that are suspiciously
     fast? (i.e. flights that represent a potential data entry error). Compute
     the air time a flight relative to the shortest flight to that destination.
