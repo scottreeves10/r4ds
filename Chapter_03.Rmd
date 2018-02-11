@@ -1593,6 +1593,69 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
 1.  Find all destinations that are flown by at least two carriers. Use that
     information to rank the carriers.
+    
+    ```{r}
+    # Example of rank()
+    flights %>%
+      group_by(year, month, day) %>%
+      select(year,month, day, dest, arr_delay) %>% 
+      filter(rank(desc(arr_delay)) <= 2)
+    ```
+    
+    ```{r}
+    #Example of min_rank()
+    flights %>%
+      group_by(year, month, day) %>%
+      select(year,month, day, dest, arr_delay) %>% 
+      filter(min_rank(desc(arr_delay)) <= 2)
+    ```
+    
+    ```{r}
+    flights %>%
+      group_by(dest) %>% 
+      mutate(n_carriers = n_distinct(carrier)) %>% 
+      filter(n_carriers >= 2) %>% 
+      group_by(dest, carrier) %>% 
+      summarize(avg_arr_delay = mean(arr_delay,na.rm = TRUE)) %>% 
+      select(dest, carrier, avg_arr_delay) %>% 
+      filter(min_rank(desc(avg_arr_delay)) <= 4) %>% 
+      arrange(dest, desc(avg_arr_delay))
+      
+      
+    ```
+    
+    ```{r}
+    # Destinations that are flown by at least two carriers - with mutate()
+    flights %>%
+      group_by(dest) %>% 
+      mutate(n_carriers = n_distinct(carrier)) %>% 
+      select(dest, n_carriers) %>%
+      filter(n_carriers >= 2) %>% 
+      arrange(dest)
+    ```
+    
+    ```{r}
+    # Destinations that are flown by at least two carriers - with summarize()
+    flights %>%
+      group_by(dest) %>% 
+      summarize(n_carriers = n_distinct(carrier)) %>% 
+      filter(n_carriers >= 2) %>% 
+      arrange(dest)
+    ```
+    
+    ```{r}
+    
+    # Destinations that are flown by at least two carriers - with mutate(). Use that
+    # information to rank the carriers.
+    
+    flights %>%
+      group_by(dest) %>% 
+      mutate(
+        n_carriers = n_distinct(carrier) 
+        )%>% 
+      filter(rank(n_carriers) >= 2)
+
+    ```   
 
 1.  For each plane, count the number of flights before the first delay 
     of greater than 1 hour.
