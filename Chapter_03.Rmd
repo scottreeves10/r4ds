@@ -1575,7 +1575,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     the air time a flight relative to the shortest flight to that destination.
     Which flights were most delayed in the air?
     
-    Using the he 68–95–99.7 rule as a naive guideline, there are 19 out of 327,000 non-cancelled flights for which the recorded shortest air_time is outside the band of three standard deviations. 
+    Using the sigma-three rule as a naive guideline, there are 19 out of 327,000 non-cancelled flights for which the recorded shortest air_time is outside the band of three standard deviations. 
     
     ```{r}
     not_cancelled %>%
@@ -1595,22 +1595,27 @@ Functions that work most naturally in grouped mutates and filters are known as  
     information to rank the carriers.
     
     ```{r}
-    # Example of rank()
+    # Destinations that are flown by at least two carriers - with summarize()
     flights %>%
-      group_by(year, month, day) %>%
-      select(year,month, day, dest, arr_delay) %>% 
-      filter(rank(desc(arr_delay)) <= 2)
+      group_by(dest) %>% 
+      summarize(n_carriers = n_distinct(carrier)) %>% 
+      filter(n_carriers >= 2) %>% 
+      arrange(dest)
     ```
     
-    ```{r}
-    #Example of min_rank()
-    flights %>%
-      group_by(year, month, day) %>%
-      select(year,month, day, dest, arr_delay) %>% 
-      filter(min_rank(desc(arr_delay)) <= 2)
-    ```
     
     ```{r}
+    
+    # Destinations that are flown by at least two carriers - with mutate(). 
+        flights %>%
+      group_by(dest) %>% 
+      mutate(n_carriers = n_distinct(carrier)) %>% 
+      filter(rank(n_carriers) >= 2)
+      
+    ```       
+    
+    ```{r}
+    # Use that information to rank the carriers. - worst average arrival delay (top 4)
     flights %>%
       group_by(dest) %>% 
       mutate(n_carriers = n_distinct(carrier)) %>% 
@@ -1625,37 +1630,20 @@ Functions that work most naturally in grouped mutates and filters are known as  
     ```
     
     ```{r}
-    # Destinations that are flown by at least two carriers - with mutate()
+    # Use that information to rank the carriers. - most flights into destination (top 4)
     flights %>%
       group_by(dest) %>% 
       mutate(n_carriers = n_distinct(carrier)) %>% 
-      select(dest, n_carriers) %>%
       filter(n_carriers >= 2) %>% 
-      arrange(dest)
+      group_by(dest, carrier) %>% 
+      summarize(number_of_flights = n()) %>% 
+      select(dest, carrier, number_of_flights) %>% 
+      filter(min_rank(desc(number_of_flights)) <= 4) %>% 
+      arrange(dest, desc(number_of_flights))
+      
+      
     ```
     
-    ```{r}
-    # Destinations that are flown by at least two carriers - with summarize()
-    flights %>%
-      group_by(dest) %>% 
-      summarize(n_carriers = n_distinct(carrier)) %>% 
-      filter(n_carriers >= 2) %>% 
-      arrange(dest)
-    ```
-    
-    ```{r}
-    
-    # Destinations that are flown by at least two carriers - with mutate(). Use that
-    # information to rank the carriers.
-    
-    flights %>%
-      group_by(dest) %>% 
-      mutate(
-        n_carriers = n_distinct(carrier) 
-        )%>% 
-      filter(rank(n_carriers) >= 2)
-
-    ```   
 
 1.  For each plane, count the number of flights before the first delay 
     of greater than 1 hour.
