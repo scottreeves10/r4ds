@@ -733,6 +733,8 @@ by_day <- group_by(flights, year, month, day)
 summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
 ```
 
+_Note: Grouping doesn't change how the data looks (apart from listing how it's grouped). It changes how it acts with the other dplyr verbs._
+
 Together `group_by()` and `summarise()` provide one of the tools that you'll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.
 
 ### Combine multiple operations with the Pipe
@@ -815,7 +817,6 @@ not_cancelled <- flights %>%
 ```
 
 ```{r}
-
 not_cancelled %>% 
   group_by(year, month, day) %>% 
   summarise(mean = mean(dep_delay))
@@ -1505,10 +1506,43 @@ Functions that work most naturally in grouped mutates and filters are known as  
       arrange(desc(avg_dep_delay))
     ```
     
-
-    
 1.  For each destination, compute the total minutes of delay. For each, 
-    flight, compute the proportion of the total delay for its destination.
+    flight compute the proportion of the total delay for its destination.
+    
+    ```{r}
+    # For each destination, compute the total minutes of delay.
+    
+    not_cancelled %>% 
+      filter(arr_delay > 0) %>% 
+      group_by(dest, flight) %>% 
+      summarize(
+        total_mins = sum(arr_delay)
+        #prop_delay = arr_delay / total_mins
+      ) %>% 
+      select(dest, flight, total_mins) %>% 
+      arrange(dest)
+    ``` 
+    
+    ```{r}
+    by_dest <- not_cancelled %>% 
+      filter(arr_delay > 0) %>% 
+      group_by(dest) %>%
+      mutate(
+        total_dest_delay = sum(arr_delay)
+        )
+    
+    by_flight <- by_dest %>% 
+      group_by(flight) %>% 
+      mutate(
+        prop_delay = sum(arr_delay) / total_dest_delay
+        )
+    
+    by_flight %>% 
+      ungroup() %>% 
+      group_by(dest, flight, total_dest_delay, prop_delay) %>% 
+      summarize(
+      )
+    ```    
     
 1.  Delays are typically temporally correlated: even once the problem that
     caused the initial delay has been resolved, later flights are delayed 
