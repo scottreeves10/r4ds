@@ -1575,7 +1575,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     the air time a flight relative to the shortest flight to that destination.
     Which flights were most delayed in the air?
     
-    Using the he 68–95–99.7 rule as a naive guidline, there are 19 out of 327,000 non-cancelled flights for which the recorded shortest air_time is outside the band of three standard deviations. 
+    Using the he 68–95–99.7 rule as a naive guideline, there are 19 out of 327,000 non-cancelled flights for which the recorded shortest air_time is outside the band of three standard deviations. 
     
     ```{r}
     not_cancelled %>%
