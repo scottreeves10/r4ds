@@ -1525,11 +1525,14 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
     ```{r}
     by_dest <- not_cancelled %>% 
-      filter(arr_delay > 0) %>% 
+      filter(arr_delay > 0) %>%   # filter by rows wih arival delays > 0
       group_by(dest) %>%
       mutate(
         total_dest_delay = sum(arr_delay)
         )
+    
+    # The total_dest_delay gets mutated to each row, respective to the row's dest, and thus is availble to be used below as the detominator in order to calculate the proportional delay.
+     
     
     by_flight <- by_dest %>% 
       group_by(flight) %>% 
@@ -1537,11 +1540,14 @@ Functions that work most naturally in grouped mutates and filters are known as  
         prop_delay = sum(arr_delay) / total_dest_delay
         )
     
+    # Ungrouping is necessary in order to regroup and summarize. else the results would be a rather uninterptretable as 133K largely non-unique rows, rather than 8K unique rows.  
+    
     by_flight %>% 
       ungroup() %>% 
       group_by(dest, flight, total_dest_delay, prop_delay) %>% 
       summarize(
       )
+    
     ```    
     
 1.  Delays are typically temporally correlated: even once the problem that
