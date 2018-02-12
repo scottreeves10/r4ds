@@ -1888,7 +1888,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     ```    
     
     ```{r}
-    # Final. All data. Filter results to flights before 60 minute delay to > 3 since this chunk requires relatively more comupations than other chunks. 
+    # Final. All data. Filter results to flights before 60 minute delay to > 3 since this chunk requires relatively more computations than other chunks. 
     
     flights %>% 
       group_by(year, month, day, tailnum) %>% 
