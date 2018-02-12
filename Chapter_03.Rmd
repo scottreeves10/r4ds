@@ -583,7 +583,8 @@ There are many functions for creating new variables that you can use with `mutat
     and dplyr provides `cummean()` for cumulative means. If you need rolling
     aggregates (i.e. a sum computed over a rolling window), try the RcppRoll
     package.
-    
+
+##### x *** 
     ```{r}
     x
     cumsum(x)
@@ -1596,6 +1597,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
     ```{r}
     # Destinations that are flown by at least two carriers - with summarize()
+    
     flights %>%
       group_by(dest) %>% 
       summarize(n_carriers = n_distinct(carrier)) %>% 
@@ -1605,9 +1607,9 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
     
     ```{r}
-    
     # Destinations that are flown by at least two carriers - with mutate(). 
-        flights %>%
+      
+    flights %>%
       group_by(dest) %>% 
       mutate(n_carriers = n_distinct(carrier)) %>% 
       filter(rank(n_carriers) >= 2)
@@ -1616,6 +1618,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
     ```{r}
     # Use that information to rank the carriers. - worst average arrival delay (top 4)
+    
     flights %>%
       group_by(dest) %>% 
       mutate(n_carriers = n_distinct(carrier)) %>% 
@@ -1631,6 +1634,7 @@ Functions that work most naturally in grouped mutates and filters are known as  
     
     ```{r}
     # Use that information to rank the carriers. - most flights into destination (top 4)
+    
     flights %>%
       group_by(dest) %>% 
       mutate(n_carriers = n_distinct(carrier)) %>% 
@@ -1647,3 +1651,271 @@ Functions that work most naturally in grouped mutates and filters are known as  
 
 1.  For each plane, count the number of flights before the first delay 
     of greater than 1 hour.
+    
+    The intuition here is to use lead() and probably cumsum() in some way. 
+    To do that we will need a temporal sequence of delays based on some other variable.
+    What are the choices for the other variable? Plane equates to tailnum, but does that make sense?
+    Planes arrive at one airport and then on to the next. We'll see.
+    
+    ```{r}
+    #List the variables.
+    
+    names(flights)
+    ```
+    ```{r}
+    # Variables we may want to use:
+    # 
+    # Year, month and day - for sure
+    # sched_dep_time - possibly
+    # dep_delay - for sure
+    # carrier - likely
+    # flight - possibly
+    # tailnum - possibly
+    ```
+    
+    ```{r}
+    # Explore delays by day by plane:
+    
+    flights %>%
+      group_by(year, month, day, tailnum) %>% 
+      summarize(total_delay = sum(dep_delay)) %>% 
+      filter(month == 7, day == 20) %>%  # filter by an arbitrary day
+      arrange(desc(total_delay))
+    ```
+    
+    ```{r}
+    # On 2018-July-20 tailnum N718EV experienced total departure delays of 242 minutes.
+    # Let's explore that further, looking for a pattern we can generalize.
+    
+    flights %>%
+      filter(month == 7, day == 20, tailnum == "N718EV", sched_dep_time, dep_delay) %>% 
+      select(tailnum, origin, sched_dep_time, dep_delay, dest, arr_time, arr_delay) %>% 
+      arrange(sched_dep_time)
+    
+    
+    ```
+    
+    ```{r}
+    # Maybe tailnum N718EV isn't the best example since it only flew twice that day, both times out of LaGuardia no less. But there may be a pattern here we can use. Let's find a plane with more than two flights in a day and a total departure delay > 60 minutes.
+    
+    flights %>%
+      group_by(year, month, day, tailnum) %>% 
+      summarize(
+        total_delay = sum(dep_delay),
+        n = n()
+          ) %>% 
+      filter(month == 7, day == 20, n > 2, total_delay > 60) %>%  # arbitrary day
+      arrange(desc(total_delay))
+    
+    ```
+    
+    ```{r}
+    # Let's explore tailnum N374JB, which had 4 flights on 2018-July-20 and experienced total departure delays of 67 minutes, looking for a pattern we can generalize.
+    
+    flights %>%
+      filter(month == 7, day == 20, tailnum == "N374JB", sched_dep_time, dep_delay) %>% 
+      select(tailnum, origin, sched_dep_time, dep_delay, dest, arr_time, arr_delay) %>% 
+      arrange(sched_dep_time)
+      
+    # We can see this plane always left out of JFK, but never experienced a departure delay exceeding 60 minutes. So we need to reset on the question: it is not about cumulative delays, but individual delays. 
+    
+    ``` 
+    
+    ```{r}
+    # Find a plane which flew multiple times in a day, and experienced at least one departure delay > 60 minutes.
+    
+    flights %>%
+      group_by(year, month, day, tailnum) %>% 
+      summarise(
+        n_flights = n(),
+        max_delay = max(dep_delay)
+        ) %>% 
+      filter(n_flights > 3, max_delay > 60, month == 7)
+    
+    ```
+    
+    ```{r}
+    # On 2013-July-03 tailnum N13988 had 4 flights and experienced a maxiumum departure delay of 140 minutes. Let's explore that one further, again looking for a pattern we can generalize.
+    
+    flights %>%
+      filter(month == 7, day == 03, tailnum == "N13988", sched_dep_time, dep_delay) %>% 
+      select(tailnum, origin, sched_dep_time, dep_delay, dest, arr_time, arr_delay) %>% 
+      arrange(sched_dep_time)
+    
+    ```
+    
+    ```{r}
+    # So, N13988 had one flight before its next dep delay was > 60 mins. Let's try to count that.
+    
+    flights %>% 
+      filter(year == 2013, month == 7, day == 03, tailnum == "N13988") %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+        flights_before = cumsum(dep_delay <= 60)       # cumsum() - TURNED OUT NOT TO WORK, as below.
+        #flights_before = sum(cumall(dep_delay <= 60)) # sum(cumall()) - TURNED out to be KEY to final success
+        ) %>% 
+      filter(arr_delay > 60 & lag(arr_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before)
+    
+    ```
+    
+    ```{r}
+    # That works. Let's try it with one month of data and all planes.
+    
+    flights %>% 
+      filter(year == 2013, month == 7) %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+        flights_before = cumsum(dep_delay >= 60)
+        ) %>% 
+      filter(dep_delay > 60 & lag(dep_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before) %>% 
+      arrange(desc(flights_before))
+    
+    ```
+
+    ```{r}
+    # The results look suspicious in that the greatest number of flights before any plane experienced a departure delay > 60 mins was 2. Let's look at one of those planes.
+    
+    flights %>%
+      filter(month == 7, day == 21, tailnum == "N851MQ", sched_dep_time, dep_delay) %>% 
+      select(tailnum, origin, sched_dep_time, dep_delay, dest, arr_time, arr_delay) %>% 
+      arrange(sched_dep_time)
+    
+    ```    
+    
+    ```{r}
+    # Having actually checked two planes, they both had 2 flights before experiencing a departure delay > 60 minutes. Intuition is that few if any planes made many more than 3 or 4 flights per day.
+    
+    flights %>% 
+      filter(year == 2013, month == 7) %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+        flights_before = cumsum(dep_delay >= 60)
+        ) %>% 
+      filter(dep_delay > 60 & lag(dep_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before) %>% 
+      arrange(desc(flights_before))
+    
+    ```   
+    
+    ```{r}
+    # Let's explore the intuition that few planes made more than around 4 flights per day. And if they did, intuition says they are flying short routes, so let's also see what their max_delay was.
+    
+    flights %>% 
+      filter(!is.na(tailnum)) %>% 
+      group_by(year, month, day, tailnum) %>% 
+      summarize(
+        n = n(),
+        max_delay = max(dep_delay, na.rm = TRUE)
+        ) %>%
+      filter(n >= 4) %>% 
+      arrange(desc(n))
+    
+    ```     
+    
+    ```{r}
+    # So tailnum N732US made 5 flights on 2013-02-15 and experienced a max departure delay of 114 minutes. Did it make more than 2 flights before this?
+    
+    flights %>%
+      filter(month == 2, day == 15, tailnum == "N732US", sched_dep_time, dep_delay) %>% 
+      select(tailnum, origin, sched_dep_time, dep_delay, dest) %>% 
+      arrange(sched_dep_time)
+    
+    # Yes, it made 3 flights before. Therefore, something is wrong with the generalized code above!!!
+    
+    ```   
+    
+    ```{r}
+    # Let's try that one particular plane tailnum N732US made 5 flights on 2013-02-15
+    
+    flights %>% 
+      filter(year == 2013, month == 2, day == 15, tailnum == "N732US") %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+        flights_before = cumsum(dep_delay <= 60)       # cumsum()
+        #flights_before = sum(cumall(dep_delay <= 60)) # sum(cumall()) also works
+        ) %>% 
+      filter(arr_delay > 60 & lag(arr_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before)
+    
+    # That works, which indicates there is in error in the generalized code chunk.
+    
+    ```   
+    
+    ```{r}
+    # We'll try modificating on this generalized chunk, and set the filter for our known observation
+    
+    flights %>% 
+      filter(year == 2013, month == 2, tailnum == "N732US") %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+      # flights_before = cumsum(lead(dep_delay >= 60)) # DOES NOT WORK
+      flights_before = sum(cumall(dep_delay <= 60)) # sum(cumall()) DOES WORK
+      # flights_before = cumall(dep_delay <= 60) # DOES NOT WORK
+      # flights_before = cumall(lead(dep_delay <= 60)) # DOES NOT WORK
+        ) %>% 
+      filter(dep_delay > 60 & lag(dep_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before) %>% 
+      arrange(desc(flights_before))
+    
+    ```   
+    
+    ```{r}
+    # Test on larger data set
+    
+    flights %>% 
+      filter(year == 2013, month == 2) %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+      flights_before = sum(cumall(dep_delay <= 60)) # sum(cumall()) DOES WORK
+        ) %>% 
+      filter(dep_delay > 60 & lag(dep_delay < 60)) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before) %>% 
+      arrange(desc(flights_before))
+    
+    # Success. Now we're cooking with gas. 
+    
+    ```    
+    
+    ```{r}
+    # Final. All data. Filter results to flights before 60 minute delay to > 3 since this chunk requires relatively more comupations than other chunks. 
+    
+    flights %>% 
+      group_by(year, month, day, tailnum) %>% 
+      arrange(sched_dep_time) %>%
+      mutate(
+      flights_before = sum(cumall(dep_delay <= 60)) # sum(cumall()) DOES WORK
+        ) %>% 
+      filter(dep_delay > 60 & lag(dep_delay < 60) & flights_before > 3) %>% 
+      select(year, month, day, tailnum, origin, sched_dep_time, dep_delay, flights_before) %>% 
+      arrange(desc(flights_before))
+    
+    ```   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
