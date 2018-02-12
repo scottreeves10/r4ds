@@ -1647,11 +1647,14 @@ Functions that work most naturally in grouped mutates and filters are known as  
       
       
     ```
-    
 
 1.  For each plane, count the number of flights before the first delay 
     of greater than 1 hour.
     
+
+    >To answer this question, the entire exploratory analysis is left intact to demonstrate the process. Some take-aways include: answer the right question and check your intuitions whenever possible. It would have been easy to stop midway, but something didn't feel right. Pushing through got the right result.
+    
+
     The intuition here is to use lead() and probably cumsum() in some way. 
     To do that we will need a temporal sequence of delays based on some other variable.
     What are the choices for the other variable? Plane equates to tailnum, but does that make sense?
