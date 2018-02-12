@@ -325,14 +325,6 @@ It's good practice to repeat your analysis with and without the outliers. If the
     # and counts increase relative to how many observations are aggregated in said wider bins.
     ```
     
-    ```{r}
-    # just for grins
-    ggplot(data = diamonds) +
-      geom_histogram(mapping = aes(x = depth, fill = cut), binwidth = 1, position = "fill")
-    
-    ```
-
-    
 ## Missing values
 
 If you've encountered unusual values in your dataset, and simply want to move on to the rest of your analysis, you have __two options__.
