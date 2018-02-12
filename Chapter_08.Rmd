@@ -1,6 +1,7 @@
 ---
 title: "Chapter 8 - Data Import with readr2"
-date: 2018-02-03
+author: Scott Reeves
+# date: 2018-02-03
 # output: github_document
 output: 
   html_document: 
@@ -138,14 +139,13 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
 
 ### Exercises
 
-1.  What function would you use to read a file where fields were separated with  
-    "|"? 
+1.  <span style="color:blue">What function would you use to read a file where fields were separated with "|"? </span>
+    
     ```{r eval=FALSE}
     read_delim()
     ```
     
-1.  Apart from `file`, `skip`, and `comment`, what other arguments do
-    `read_csv()` and `read_tsv()` have in common?
+1.  <span style="color:blue">Apart from `file`, `skip`, and `comment`, what other arguments do `read_csv()` and `read_tsv()` have in common?</span>
     
     They both have the same arguments, the others being:
     col_types, locale, na, quoted_na, quote, trim_ws, n_max, guess_max, progress
@@ -154,17 +154,12 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     union(names(formals(read_csv)), names(formals(read_tsv)))
     ```
     
-1.  What are the most important arguments to `read_fwf()`?
-    Read a fixed width file into a tibble. 
+1.  <span style="color:blue">What are the most important arguments to `read_fwf()`?
+    Read a fixed width file into a tibble. </span>
     
     The most important arguments are Column positions, as created by `fwf_empty()`, `fwf_widths()` or `fwf_positions()`.
 
-1.  Sometimes strings in a CSV file contain commas. To prevent them from
-    causing problems they need to be surrounded by a quoting character, like
-    `"` or `'`. By convention, `read_csv()` assumes that the quoting
-    character will be `"`, and if you want to change it you'll need to
-    use `read_delim()` instead. What arguments do you need to specify
-    to read the following text into a data frame?
+1.  <span style="color:blue">Sometimes strings in a CSV file contain commas. To prevent them from causing problems they need to be surrounded by a quoting character, like `"` or `'`. By convention, `read_csv()` assumes that the quoting character will be `"`, and if you want to change it you'll need to use  `read_delim()` instead. What arguments do you need to specify to read the following text into a data frame?</span>
     
     ```{r, eval = FALSE}
     "x,y\n1,'a,b'"
@@ -182,8 +177,8 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     read_csv("x,y\n1,'a,b'", quote = "'")
     ```
     
-1.  Identify what is wrong with each of the following inline CSV files. 
-    What happens when you run the code?
+1.  <span style="color:blue">Identify what is wrong with each of the following inline CSV files. 
+    What happens when you run the code?</span>
     
     ```{r, eval = FALSE}
     read_csv("a,b\n1,2,3\n4,5,6")
@@ -211,7 +206,7 @@ If you've used R before, you might wonder why we're not using `read.csv()`. Ther
     
     ```{r warning=TRUE}
     read_csv("a;b\n1;3") # should use read_csv2() for semi-colon delims
-```
+    ```
     
 ## Parsing a vector
 
@@ -471,15 +466,15 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
 
 ### Exercises
 
-1.  What are the most important arguments to `locale()`? 
+1.  <span style="color:blue">What are the most important arguments to `locale()`? </span>
 
     When parsing numbers, the most important arguments to `locale()` are `decimal mark` and grouping_mark. 
     
-1.  What happens if you try and set `decimal_mark` and `grouping_mark` 
+1.  <span style="color:blue">What happens if you try and set `decimal_mark` and `grouping_mark` 
     to the same character? What happens to the default value of 
     `grouping_mark` when you set `decimal_mark` to ","? What happens
     to the default value of `decimal_mark` when you set the `grouping_mark`
-    to "."?
+    to "."?</span>
 
     ```{r}
     # When `decimal_mark` and `grouping_mark` to the same character the fractional
