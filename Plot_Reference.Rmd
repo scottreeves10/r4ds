@@ -1,0 +1,422 @@
+---
+title: "Plot Reference"
+author: Scott Reeves
+#date: 2018-01-18
+output: 
+  html_document: 
+    #theme: flatly
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    #number_sections: true
+    #code_folding: show
+---
+
+```{r options, include=FALSE}
+set.seed(1014)
+#options(digits = 3)
+
+knitr::opts_chunk$set(comment = "#>",highlight=TRUE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 8,fig.asp = 0.618)
+
+options(dplyr.print_min = 6, dplyr.print_max = 6)
+library(htmltools)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Libraries ----
+
+library(tidyverse)
+library(nycflights13)
+library(ggstance)
+library(ggbeeswarm)
+library(lvplot)
+library(hexbin)
+```
+
+## Data Sets
+```{r}
+data("mpg")
+data("diamonds")
+smaller <- diamonds %>% 
+  filter(carat < 3)
+```
+
+### Brevity
+
+```{r}
+# For brevity, assign to objects
+pmpg <- ggplot(data = mpg)
+pdmd <- ggplot(data = diamonds)
+```
+
+### Structures
+```{r}
+str(mpg)
+```
+
+```{r}
+str(diamonds)
+```
+
+## The layered grammar of graphics
+
+```{r eval = FALSE}
+
+# ggplot(data = <DATA>) + 
+#   <GEOM_FUNCTION>(
+#     mapping = aes(<MAPPINGS>),
+#     stat = <STAT>, 
+#     position = <POSITION>
+#   ) +
+#   <COORDINATE_FUNCTION> +
+#   <FACET_FUNCTION>
+```
+
+
+## Basis: One variable, Discrete X
+
+### `geom_bar()`
+
+Description: Height of the bar proportional to the number of cases in each group (or if the weight aethetic is supplied, the sum of the weights). 
+
+Stat: geom_bar uses stat_count by default: it counts the number of cases at each x position.
+
+```{r}
+pmpg + geom_bar(aes(manufacturer))
+```
+
+#### `coord_flip()`
+
+Flip to read long variable names
+
+```{r}
+pmpg + geom_bar(mapping = aes(manufacturer)) +
+   coord_flip()
+```
+
+### Multiple discrete variables
+
+### Color and  fill
+
+```{r}
+pmpg + geom_bar(mapping = aes(manufacturer, color = class), show.legend = TRUE) +
+  coord_flip()
+
+```
+
+```{r}
+pmpg + geom_bar(mapping = aes(manufacturer, fill = class), show.legend = TRUE) +
+  coord_flip()
+```
+ 
+### Facet_wrap
+
+```{r}
+pmpg + geom_bar(mapping = aes(manufacturer)) +
+  facet_wrap(~ drv) +
+  coord_flip()
+```
+
+```{r}
+pdmd + geom_bar(mapping = aes(cut)) +
+  facet_wrap(~ color) +
+  coord_flip()
+```
+
+### Position
+
+#### Stacking
+
+Stacking within one factor level. Usually not as good as Dodging. 
+
+```{r}
+pdmd + geom_bar(aes(cut == 'ideal', fill = color))
+```
+
+
+#### Dodge 
+```{r}
+pdmd + geom_bar(aes(cut == 'ideal', fill = color), position = "dodge")
+
+```
+
+#### Filter then plot
+
+Sometimes: filter the data first then plot, rather than trying to do everything in ggplot
+```{r}
+ideal <- diamonds %>% 
+  filter(cut == "Ideal")
+
+```
+
+Then plot against a second discrete variable
+```{r}
+ggplot(ideal, aes(color, fill = color)) +
+  geom_bar(show.legend = FALSE) +
+  labs(x = "Color dist of Ideal cut")
+
+```
+
+
+### Position - STACK vs. DODGE vs. FILL
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color), position = "stack")  +
+  labs(title = "STACKED")
+
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color), position = "dodge")  +
+  labs(title = "DODGED")
+
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color), position = "fill")  +
+  facet_wrap(~ clarity) +
+  labs(title = "FILLED")
+
+```
+
+```{r}
+# this is a good one
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color), position = "fill")  +
+  facet_wrap(~ clarity) +
+  coord_flip() +
+  labs(title = "FILLED")
+
+```
+
+Note: `geom_histogrom()` with `stat = "count"` is the same as `geom_bar()`
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = cut, fill = color), stat = "count", position = "fill")  +
+  labs(title = "FILLED")
+
+```
+
+### geom_col()
+  
+A second type of bar charts.If you want the heights of the bars to represent values in the data, use geom_col instead.  
+
+Stat: geom_col uses stat_identity: it leaves the data as is. Requires assignment of a y-axis
+  
+## Basis: One variable, Continuous X
+  
+### geom_histogram()
+
+Visualise the distribution of a single continuous variable by dividing the x axis into bins and counting the number of observations in each bin. 
+
+Histograms `geom_histogram` display the count with bars; frequency polygons `geom_freqpoly`, display the counts with lines. Frequency polygons are more suitable when you want to compare the distribution across a the levels of a categorical variable.
+
+`stat_bin` is suitable only for continuous x data. If your x data is discrete, you probably want to use `stat_count` (which is effectively the same as geom_bar)
+
+```{r}
+pdmd + geom_histogram(mapping = aes(x = carat), binwidth = 0.5)
+
+```
+
+
+### facet wrap with categorical variable
+
+```{r}
+ggplot(data = diamonds) +
+  geom_histogram(mapping = aes(x = price), binwidth = 100) +
+  facet_wrap(~ clarity)
+
+```
+
+
+### geom_freqpoly()
+
+Frequency polygons display the counts with lines. Frequency polygons are more suitable when you want to compare the distribution across a the levels of a categorical variable.
+
+```{r}
+ggplot(data = diamonds) +
+  geom_freqpoly(mapping = aes(x = price), binwidth = 100)
+
+```
+
+
+### colored with a categorical variable
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = price)) +
+  geom_freqpoly(mapping = aes(color = cut), binwidth = 500)
+
+```
+
+
+### colored with a categorical variable and y = ..density.. 
+
+For a better comparison when the overall counts differ so much
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = price, y = ..density..)) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+
+```
+
+
+  
+## Basis: Two variables, Continuous X, Continuous Y
+  
+### geom_point()
+
+Description: The point geom is used to create scatterplots. The scatterplot is most useful for displaying the relationship between two continuous variables. It can be used to compare one continuous and one categorical variable, or two categorical variables, but a variation like `geom_jitter`, `geom_count`, or `geom_bin2d` is usually more appropriate.
+
+The __bubblechart__ is a scatterplot with a third variable mapped to the size of points. There are no special names for scatterplots where another variable is mapped to point shape or colour, however.
+
+Stat: Identity, which leaves the data as is. 
+```{r}
+pmpg + geom_point(aes(cty, hwy))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy, size = class))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+```
+
+```{r}
+pmpg + geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+
+```
+
+
+### geom_smooth()
+
+```{r}
+pmpg + geom_smooth(mapping = aes(x = displ, y = hwy))
+
+```
+
+
+### geom_bin2d()
+
+### geom_hex()
+
+### geom_boxplot() using group = cut_width
+
+Can use one of the techniques for visualising the combination of a categorical and a continuous variable, in this case boxplot shows variance, but not sense of relative number of observations.
+
+```{r}
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)))
+
+```
+
+### geom_boxplot() using group = cut_number
+
+Shows variance and sense of relative number of observations
+
+```{r}
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_number(carat, 20)))
+
+```
+
+
+## Basis: Two variables, Discrete X, Continuous Y
+
+### geom_violin()
+
+Description: A violin plot is a compact display of a continuous distribution. It is a blend of geom_boxplot and geom_density: a violin plot is a mirrored density plot displayed in the same way as a boxplot.
+
+Stat: stat = "ydensity"
+
+```{r}
+ggplot(data = diamonds) +
+  geom_violin(aes(clarity, price))
+
+```
+
+
+## Basis: Two variables, Discrete X, Discrete Y
+
+### geom_count()
+
+Description: This is a variant geom_point that counts the number of observations at each location, then maps the count to point area. It useful when you have discrete data and overplotting.
+
+```{r}
+ggplot(data = diamonds) +
+  geom_count(mapping = aes(x = cut, y = color))
+
+```
+
+
+### geom_tile()
+
+Used with count for fill = n
+
+```{r}
+diamonds %>% 
+  count(color, cut) %>%  
+  ggplot(mapping = aes(x = color, y = cut)) +
+    geom_tile(mapping = aes(fill = n))
+
+```
+
+```{r}
+mpg %>% 
+  count(cyl, displ) %>% 
+  ggplot(mapping = aes(x = cyl, y = displ)) +
+    geom_tile(mapping = aes(fill = n))
+
+```
+
+
+### factor to avoid gaps
+
+```{r}
+mpg %>% 
+  count(cyl = factor(cyl), displ = factor(displ)) %>% 
+  ggplot(mapping = aes(x = cyl, y = displ)) +
+    geom_tile(mapping = aes(fill = n))
+
+```
+
+
+
