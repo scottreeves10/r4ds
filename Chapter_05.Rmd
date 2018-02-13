@@ -5,6 +5,7 @@ output:
   html_document: 
     toc: true
     toc_float: true
+    toc_depth: 5
     #number_sections: true
     #code_folding: show
 ---
@@ -13,7 +14,7 @@ output:
 set.seed(1014)
 #options(digits = 3)
 
-knitr::opts_chunk$set(comment = "#>",highlight=FALSE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 8,fig.asp = 0.618)
+knitr::opts_chunk$set(comment = "#>",highlight=TRUE,collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 8,fig.asp = 0.618)
 
 options(dplyr.print_min = 6, dplyr.print_max = 6)
 library(htmltools)
@@ -49,12 +50,9 @@ library(modelr)
 
 ## Questions
 
-> "There are no routine statistical questions, only questionable statistical
-> routines." --- Sir David Cox
+> "There are no routine statistical questions, only questionable statistical routines." --- Sir David Cox
 
-> "Far better an approximate answer to the right question, which is often
-> vague, than an exact answer to the wrong question, which can always be made
-> precise." --- John Tukey
+> "Far better an approximate answer to the right question, which is often vague, than an exact answer to the wrong question, which can always be made precise." --- John Tukey
 
 Your goal during EDA is to develop an understanding of your data. The easiest way to do this is to use questions as tools to guide your investigation. When you ask a question, the question focuses your attention on a specific part of your dataset and helps you decide which graphs, models, or transformations to make.
 
@@ -97,7 +95,7 @@ Every variable has its own pattern of variation, which can reveal interesting in
 
 How you visualise the distribution of a variable will depend on whether the variable is categorical or continuous. A variable is **categorical** if it can only take one of a small set of values. In R, categorical variables are usually saved as factors or character vectors. To examine the distribution of a categorical variable, use a bar chart:
 
-##### geom_bar()
+#### geom_bar()
 
 ```{r}
 ggplot(data = diamonds) +
@@ -111,18 +109,18 @@ diamonds %>%
   count(cut)
 ```
 
-##### To examine the distribution of a continuous variable, use a histogram:
+#### To examine the distribution of a continuous variable, use a histogram:
 
 A variable is **continuous** if it can take any of an infinite set of ordered values. Numbers and date-times are two examples of continuous variables. To examine the distribution of a continuous variable, use a histogram:
 
-##### geom_histogram()
+#### geom_histogram()
 
 ```{r}
 ggplot(data = diamonds) +
   geom_histogram(mapping = aes(x = carat), binwidth = 0.5)
 ```
 
-##### cut_width()
+#### cut_width()
 
 You can compute this by hand by combining `dplyr::count()` and `ggplot2::cut_width()`:
 
@@ -143,7 +141,7 @@ ggplot(data = smaller, mapping = aes(x = carat)) +
   geom_histogram(binwidth = 0.1)
 ```
 
-##### geom_freqpoly()
+#### geom_freqpoly()
 
 If you wish to overlay multiple histograms in the same plot, I recommend using `geom_freqpoly()` instead of `geom_histogram()`. `geom_freqpoly()` performs the same calculation as `geom_histogram()`, but instead of displaying the counts with bars, uses lines instead. It's much easier to understand overlapping lines than bars.
 
@@ -180,7 +178,9 @@ ggplot(data = smaller, mapping = aes(x = carat)) +
   geom_histogram(binwidth = 0.01)
 ```
 
-##### Clusters of similar values suggest that subgroups exist in your data. To understand the subgroups, ask:
+#### Clusters 
+
+Clusters of similar values suggest that subgroups exist in your data. To understand the subgroups, ask:
 
 * How are the observations within each cluster similar to each other?
 
@@ -201,7 +201,7 @@ Many of the questions above will prompt you to explore a relationship *between* 
 
 ### Unusual values
 
-##### Outliers
+#### Outliers
 
 Outliers are observations that are unusual; data points that don't seem to fit the pattern. Sometimes outliers are data entry errors; other times outliers suggest important new science. When you have a lot of data, outliers are sometimes difficult to see in a histogram.  For example, take the distribution of the `y` variable from the diamonds dataset. The only evidence of outliers is the unusually wide limits on the x-axis.
 
@@ -210,7 +210,7 @@ ggplot(diamonds) +
   geom_histogram(mapping = aes(x = y), binwidth = 0.5)
 ```   
 
-##### coord_cartesian(), xlim() and ylim()
+#### coord_cartesian(), xlim() and ylim()
 
 There are so many observations in the common bins that the rare bins are so short that you can't see them (although maybe if you stare intently at 0 you'll spot something). To make it easy to see the unusual values, we need to zoom to small values of the y-axis with `coord_cartesian()`:
 
@@ -244,7 +244,6 @@ The `y` variable measures one of the three dimensions of these diamonds, in mm. 
 
 It's good practice to repeat your analysis with and without the outliers. If they have minimal effect on the results, and you can't figure out why they're there, it's reasonable to replace them with missing values, and move on. However, if they have a substantial effect on your results, you shouldn't drop them without justification. You'll need to figure out what caused them (e.g. a data entry error) and disclose that you removed them in your write-up.
 
-
 ### Exercises
 
 1.  <span style="color:blue">Explore the distribution of each of the `x`, `y`, and `z` variables 
@@ -270,8 +269,7 @@ It's good practice to repeat your analysis with and without the outliers. If the
       coord_cartesian(xlim = c(1,6))
     # 2mm < z < 5 mm most shallow. makes since as depth.
     ```
-
-
+    
 1.  <span style="color:blue">Explore the distribution of `price`. Do you discover anything unusual
     or surprising? (Hint: Carefully think about the `binwidth` and make sure
     you try a wide range of values.)</span>
@@ -293,13 +291,8 @@ It's good practice to repeat your analysis with and without the outliers. If the
       filter(carat == 0.99 | carat == 1.00)
     ```
     
-1.  Compare and contrast `coord_cartesian()` vs `xlim()` or `ylim()` when
-    zooming in on a histogram. What happens if you leave `binwidth` unset?
-    What happens if you try and zoom so only half a bar shows?
-
-    ```{r}
-    str(diamonds)
-    ```
+1.  <span style="color:blue">Compare and contrast `coord_cartesian()` vs `xlim()` or `ylim()` when zooming in on a histogram. What happens if you leave `binwidth` unset?
+    What happens if you try and zoom so only half a bar shows?</span>
     
     ```{r}
     #zoom without clipping
@@ -321,8 +314,8 @@ It's good practice to repeat your analysis with and without the outliers. If the
     ggplot(data = diamonds) +
       geom_histogram(mapping = aes(x = depth, color = cut)) +
       coord_cartesian(xlim = c(0,150), ylim = c(0,10))
-    # granularity is not controlled. e.g., wider bins show fewer discrete observations, 
-    # and counts increase relative to how many observations are aggregated in said wider bins.
+    
+    # granularity is not controlled. e.g., wider bins show fewer discrete observations, and counts increase relative to how many observations are aggregated in said wider bins.
     ```
     
 ## Missing values
@@ -351,7 +344,7 @@ If you've encountered unusual values in your dataset, and simply want to move on
       mutate(y = ifelse(y < 3 | y > 20, NA, y))
     ```
 
-##### ifelse()
+#### ifelse()
 
 `ifelse()` has three arguments. The first argument `test` should be a logical vector. The result will contain the value of the second argument, `yes`, when `test` is `TRUE`, and the value of the third argument, `no`, when it is false.
 
@@ -362,7 +355,7 @@ ggplot(data = diamonds2, mapping = aes(x = x, y = y)) +
   geom_point()
 ```
 
-##### na.rm = TRUE
+#### na.rm = TRUE
 
 To suppress that warning, set `na.rm = TRUE`:
 
@@ -371,7 +364,7 @@ ggplot(data = diamonds2, mapping = aes(x = x, y = y)) +
   geom_point(na.rm = TRUE)
 ```
 
-##### is.na()
+#### is.na()
 
 Other times you want to understand what makes observations with missing values different to observations with recorded values. For example, in `nycflights13::flights`, missing values in the `dep_time` variable indicate that the flight was cancelled. So you might want to compare the scheduled departure times for cancelled and non-cancelled times. You can do this by making a new variable with `is.na()`.
 
@@ -393,7 +386,77 @@ However this plot isn't great because there are many more non-cancelled flights 
 
 1.  <span style="color:blue">What happens to missing values in a histogram?  What happens to missing values in a bar chart? Why is there a difference?</span>
 
+    What happens to missing values in a histogram? - They are removed with a warning
+    What happens to missing values in a bar chart? - They are removed with a warning
+    
+    Why is there a difference? 
+    geom_histogram: stat_bin bins data in ranges and counts the cases in each range. 
+    geom_bar: stat_count counts the number of cases at each x position (without binning into ranges). 
+    stat_bin requires continuous x data, whereas stat_count can be used for both discrete and continuous x data.
+
+    ```{r eval=FALSE}
+    ?geom_histogram 
+    
+    # single continuous variable:
+    # 
+    # na.rm() :
+    #           If FALSE, the default, missing values are removed with a warning. 
+    #           If TRUE, missing values are silently removed.
+    ```
+
+    ```{r}
+    ggplot(data = flights, aes(x = dep_time)) +
+      geom_histogram(binwidth = 1)
+    # Warning message:
+    #  Removed 8255 rows containing non-finite values (stat_bin). 
+    ```
+
+    ```{r eval=FALSE}
+     
+    ?geom_bar 
+    
+    #single discrete variable (typically, but bins will aggregate times)
+    
+    # na.rm() :
+    #           If FALSE, the default, missing values are removed with a warning. 
+    #           If TRUE, missing values are silently removed.
+    ```
+
+    ```{r}
+    ggplot(data = flights, aes(x = dep_time)) +
+      geom_bar()
+    
+    # Warning message:
+    #   Removed 8255 rows containing non-finite values (stat_count).
+    ```
+
+    ```{r}
+    # just for fun
+    flights %>% 
+      mutate(
+        dep_hour = dep_time %/% 100,
+        dep_min  = dep_time %% 100,
+        dep_time = dep_hour + dep_min / 60
+      ) %>% 
+      ggplot()+
+      geom_histogram(aes(x = dep_time), fill = "blue", color = "yellow", binwidth = .5)
+      #coord_cartesian(xlim = c(7,9))
+    
+    ```
+
 1.  <span style="color:blue">What does `na.rm = TRUE` do in `mean()` and `sum()`?</span>
+
+    ```{r eval=FALSE}
+    ?mean
+    
+    # na.rm - logical value indicating whether NA values should be stripped before the computation proceeds.
+    
+    ?sum()
+    
+    # If na.rm is FALSE an NA or NaN value in any of the arguments will cause a value of NA or NaN to be returned, otherwise NA and NaN values are ignored.
+    
+    ```
+
 
 ## Covariation
 
@@ -417,12 +480,16 @@ ggplot(diamonds) +
 
 To make the comparison easier we need to swap what is displayed on the y-axis. Instead of displaying count, we'll display __density__, which is the count standardised so that the area under each frequency polygon is one.
 
+##### y = ..density..
+
 ```{r}
 ggplot(data = diamonds, mapping = aes(x = price, y = ..density..)) + 
   geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
 ```
 
 There's something rather surprising about this plot - it appears that fair diamonds (the lowest quality) have the highest average price!  But maybe that's because frequency polygons are a little hard to interpret - there's a lot going on in this plot.
+
+##### geom_boxplot()
 
 Another alternative to display the distribution of a continuous variable broken down by a categorical variable is the boxplot. A **boxplot** is a type of visual shorthand for a distribution of values that is popular among statisticians. Each boxplot consists of:
 
@@ -453,6 +520,8 @@ ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
 
 We see much less information about the distribution, but the boxplots are much more compact so we can more easily compare them (and fit more on one plot). It supports the counterintuitive finding that better quality diamonds are cheaper on average! In the exercises, you'll be challenged to figure out why.
 
+##### reorder()
+
 `cut` is an ordered factor: fair is worse than good, which is worse than very good and so on. Many categorical variables don't have such an intrinsic order, so you might want to reorder them to make a more informative display. One way to do that is with the `reorder()` function.
 
 For example, take the `class` variable in the `mpg` dataset. You might be interested to know how highway mileage varies across classes:
@@ -464,10 +533,14 @@ ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
 
 To make the trend easier to see, we can reorder `class` based on the median value of `hwy`:
 
+##### FUN = median
+
 ```{r fig.height = 3}
 ggplot(data = mpg) +
   geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy))
 ```
+
+##### coord_flip()
 
 If you have long variable names, `geom_boxplot()` will work better if you flip it 90°. You can do that with `coord_flip()`.
 
@@ -481,13 +554,82 @@ ggplot(data = mpg) +
 
 1.  <span style="color:blue">Use what you've learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.</span>
 
-1.  <span style="color:blue">What variable in the diamonds dataset is most important for predicting
-    the price of a diamond? How is that variable correlated with cut?
-    Why does the combination of those two relationships lead to lower quality
-    diamonds being more expensive?</span>
+    ```{r}
+    # prior
+    nycflights13::flights %>% 
+      mutate(
+        cancelled      = is.na(dep_time),
+        sched_hour     = sched_dep_time %/% 100,
+        sched_min      = sched_dep_time %% 100,
+        sched_dep_time = sched_hour + sched_min / 60
+      ) %>% 
+      ggplot(mapping = aes(sched_dep_time)) + 
+      geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4)
+    ```
+    
+    ```{r}
+    # improved
+    nycflights13::flights %>% 
+      mutate(
+        cancelled      = is.na(dep_time),
+        sched_hour     = sched_dep_time %/% 100,
+        sched_min      = sched_dep_time %% 100,
+        sched_dep_time = sched_hour + sched_min / 60
+      ) %>% 
+      ggplot(mapping = aes(sched_dep_time, y = ..density..)) + 
+      geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4)
+    
+    ```
 
-1.  <span style="color:blue">Install the ggstance package, and create a horizontal boxplot.
-    How does this compare to using `coord_flip()`?</span>
+1.  <span style="color:blue">What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut?
+    Why does the combination of those two relationships lead to lower quality diamonds being more expensive?</span>
+    
+    ```{r}
+    ggplot(data = diamonds, mapping = aes(x = carat, y = price)) + 
+    geom_point(aes(color = cut, alpha = .10)) +
+    geom_smooth(se = FALSE)
+    ```
+    
+    ```{r}
+    ggplot(data = diamonds, mapping = aes(x = reorder(cut, carat, FUN = median), y = carat)) + 
+    geom_boxplot()
+    ```
+    
+    ```{r}
+    ggplot(diamonds) +
+    geom_point(aes(carat, price, color = cut)) +
+    facet_wrap(~clarity)
+    ```
+    
+    ```{r}
+    ggplot(diamonds) +
+    geom_point(aes(cut, carat))
+    ```
+
+
+1.  <span style="color:blue">Install the ggstance package, and create a horizontal boxplot. How does this compare to using `coord_flip()`?</span>
+
+    ```{r eval=FALSE}
+    install.packages("ggstance")
+    ```
+
+    While coord_flip() can only flip a plot as a whole, ggstance provides flipped versions of Geoms, Stats and Positions. This makes it easier to build horizontal layer or use vertical positioning (e.g. vertical dodging). Also, horizontal Geoms draw horizontal legend keys to keep the appearance of your plots consistent.
+
+    https://cran.r-project.org/web/packages/ggstance/README.html
+
+    ```{r}
+    # prior
+    ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+      geom_boxplot() +
+      coord_flip()
+    ```
+
+    ```{r}
+    # with ggstance (in this case it's the same, i.e, flips the plot as a whole)
+    ggplot(data = mpg, mapping = aes(x = hwy, y = class)) +
+      geom_boxploth()
+    ```
+
 
 1.  <span style="color:blue">One problem with boxplots is that they were developed in an era of 
     much smaller datasets and tend to display a prohibitively large
