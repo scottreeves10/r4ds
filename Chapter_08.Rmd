@@ -7,6 +7,7 @@ output:
   html_document: 
     toc: true
     toc_float: true
+    toc_depth: 4
 ---
 
 ```{r knitr, include=FALSE}
@@ -28,6 +29,8 @@ In this chapter, you'll learn how to load flat files in R with the __readr__ pac
 
 ```{r setup, message=FALSE}
 library(tidyverse)
+library(hms)
+
 ```
 
 ## Getting started
@@ -240,9 +243,10 @@ And the failures will be missing in the output:
 x
 ```
 
+#### problems()
+
 If there are many parsing failures, you'll need to use `problems()` to get the complete set. This returns a tibble, which you can then manipulate with dplyr.
 
-#### problems()
 
 ```{r}
 problems(x)
@@ -277,15 +281,13 @@ The following sections describe these parsers in more detail.
 
 It seems like it should be straightforward to parse a number, but three problems make it tricky:
 
-1. People write numbers differently in different parts of the world.
-   For example, some countries use `.` in between the integer and fractional 
-   parts of a real number, while others use `,`.
+1. People write numbers differently in different parts of the world.For example, some countries use `.` in between the integer and fractional parts of a real number, while others use `,`.
    
-1. Numbers are often surrounded by other characters that provide some
-   context, like "$1000" or "10%".
+1. Numbers are often surrounded by other characters that provide some context, like "$1000" or "10%".
 
-1. Numbers often contain "grouping" characters to make them easier to read, 
-   like "1,000,000", and these grouping characters vary around the world.
+1. Numbers often contain "grouping" characters to make them easier to read, like "1,000,000", and these grouping characters vary around the world.
+
+#### locale()
 
 To address the first problem, readr has the notion of a "locale", an object that specifies parsing options that differ from place to place. When parsing numbers, the most important option is the character you use for the decimal mark. You can override the default value of `.` by creating a new locale and setting the `decimal_mark` argument:
 
@@ -298,7 +300,7 @@ parse_double("1,23", locale = locale(decimal_mark = ","))
 
 readr's default locale is US-centric, because generally R is US-centric (i.e. the documentation of base R is written in American English). An alternative approach would be to try and guess the defaults from your operating system. This is hard to do well, and, more importantly, makes your code fragile: even if it works on your computer, it might fail when you email it to a colleague in another country.
 
-#### parse_number(), parse_number( , locale = locale(grouping_mark = "."))
+#### parse_number(), parse_number(x, locale = locale(grouping_mark = "."))
 
 `parse_number()` addresses the second problem: it ignores non-numeric characters before and after the number. This is particularly useful for currencies and percentages, but also works to extract numbers embedded in text.
 
@@ -393,19 +395,16 @@ You pick between three parsers depending on whether you want a date (the number 
     parse_datetime("20101010")
     ```
     
-    This is the most important date/time standard, and if you work with
-    dates and times frequently, I recommend reading
+    This is the most important date/time standard, and if you work with dates and times frequently, I recommend reading
     <https://en.wikipedia.org/wiki/ISO_8601>
     
-*   `parse_date()` expects a four digit year, a `-` or `/`, the month, a `-` 
-    or `/`, then the day:
+*   `parse_date()` expects a four digit year, a `-` or `/`, the month, a `-` or `/`, then the day:
     
     ```{r}
     parse_date("2010-10-01")
     ```
 
-*   `parse_time()` expects the hour, `:`, minutes, optionally `:` and seconds, 
-    and an optional am/pm specifier:
+*   `parse_time()` expects the hour, `:`, minutes, optionally `:` and seconds, and an optional am/pm specifier:
     
 #### library(hms)
   
@@ -415,8 +414,7 @@ You pick between three parsers depending on whether you want a date (the number 
     parse_time("20:10:01")
     ```
     
-    Base R doesn't have a great built in class for time data, so we use 
-    the one provided in the hms package.
+    Base R doesn't have a great built in class for time data, so we use the one provided in the hms package.
     
 If these defaults don't work for your data you can supply your own date-time `format`, built up of the following pieces:
 
@@ -470,45 +468,47 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
 
     When parsing numbers, the most important arguments to `locale()` are `decimal mark` and grouping_mark. 
     
-1.  <span style="color:blue">What happens if you try and set `decimal_mark` and `grouping_mark` 
-    to the same character? What happens to the default value of 
-    `grouping_mark` when you set `decimal_mark` to ","? What happens
-    to the default value of `decimal_mark` when you set the `grouping_mark`
-    to "."?</span>
+1.  <span style="color:blue">What happens if you try and set `decimal_mark` and `grouping_mark` to the same character? What happens to the default value of `grouping_mark` when you set `decimal_mark` to ","? What happens to the default value of `decimal_mark` when you set the `grouping_mark` to "."?</span>
 
     ```{r}
-    # When `decimal_mark` and `grouping_mark` to the same character the fractional
-    # digits become part of the whole
-    # 
+    # When `decimal_mark` and `grouping_mark` are set to the same character, then the fractional part incorrectly become part of the integer part.
+    
     parse_number("123,456,789,28", locale = locale(grouping_mark = ","), (decimal_mark = ","))
     ```
     
     ```{r}
-    # If `decimal_mark` is set to ",", then `grouping_mark` is superceded.
-    # 
+    # If `decimal_mark` is set to ",", then `grouping_mark` is superceded, and the some of the integer incorrectly becomes a fractional part. 
+    
     parse_number("123,456,789,28", locale = locale(decimal_mark = ","))
     ```
 
     ```{r}
     # If `grouping_mark` is set to ".", then `decimal_mark` is superceded.
-    # 
+    
     parse_number("123,456,789.28", locale = locale(grouping_mark = "."))
     ```
 
-1.  I didn't discuss the `date_format` and `time_format` options to
-    `locale()`. What do they do? Construct an example that shows when 
-    they might be useful.
-
-1.  If you live outside the US, create a new locale object that encapsulates 
-    the settings for the types of file you read most commonly.
+1.  <span style="color:blue">I didn't discuss the `date_format` and `time_format` options to `locale()`. What do they do? Construct an example that shows when they might be useful.
+  
+    They enable you to customize the format to expect of incoming data to be parsed. 
     
-1.  What's the difference between `read_csv()` and `read_csv2()`?
+    ```{r}
+    parse_date("2/13/18", "%m/%d/%y")
     
-1.  What are the most common encodings used in Europe? What are the
-    most common encodings used in Asia? Do some googling to find out.
+    parse_date("13-Feb-2018", "%d-%b-%Y")
+    
+    parse_date("18/13/February", "%y/%d/%B")
+    ```
 
-1.  Generate the correct format string to parse each of the following 
-    dates and times:
+1.  <span style="color:blue">If you live outside the US, create a new locale object that encapsulates the settings for the types of file you read most commonly.</span>
+    
+1.  <span style="color:blue">What's the difference between `read_csv()` and `read_csv2()`?</span>
+
+
+  
+1.  <span style="color:blue">What are the most common encodings used in Europe? What are the most common encodings used in Asia? Do some googling to find out.</span>
+
+1.  <span style="color:blue">Generate the correct format string to parse each of the following dates and times:</span>
     
     ```{r}
     d1 <- "January 1, 2010"
@@ -519,3 +519,238 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
     t1 <- "1705"
     t2 <- "11:15:10.12 PM"
     ```
+
+## Parsing a file
+
+Now that you've learned how to parse an individual vector, it's time to return to the beginning and explore how readr parses a file. There are two new things that you'll learn about in this section:
+
+1. How readr automatically guesses the type of each column.
+1. How to override the default specification.
+
+### Strategy
+
+readr uses a heuristic to figure out the type of each column: it reads the first 1000 rows and uses some (moderately conservative) heuristics to figure out the type of each column. You can emulate this process with a character vector using `guess_parser()`, which returns readr's best guess, and `parse_guess()` which uses that guess to parse the column:
+
+```{r}
+guess_parser("2010-10-01")
+guess_parser("15:01")
+guess_parser(c("TRUE", "FALSE"))
+guess_parser(c("1", "5", "9"))
+guess_parser(c("12,352,561"))
+
+str(parse_guess("2010-10-10"))
+```
+
+The heuristic tries each of the following types, stopping when it finds a match:
+
+* logical: contains only "F", "T", "FALSE", or "TRUE".
+* integer: contains only numeric characters (and `-`).
+* double: contains only valid doubles (including numbers like `4.5e-5`).
+* number: contains valid doubles with the grouping mark inside.
+* time: matches the default `time_format`.
+* date: matches the default `date_format`.
+* date-time: any ISO8601 date.
+
+If none of these rules apply, then the column will stay as a vector of strings.
+
+### Problems
+
+These defaults don't always work for larger files. There are two basic problems:
+
+1.  The first thousand rows might be a special case, and readr guesses
+    a type that is not sufficiently general. For example, you might have 
+    a column of doubles that only contains integers in the first 1000 rows. 
+
+1.  The column might contain a lot of missing values. If the first 1000
+    rows contain only `NA`s, readr will guess that it's a character 
+    vector, whereas you probably want to parse it as something more
+    specific.
+
+readr contains a challenging CSV that illustrates both of these problems:
+
+```{r}
+challenge <- read_csv(readr_example("challenge.csv"))
+```
+
+(Note the use of `readr_example()` which finds the path to one of the files included with the package)
+
+There are two printed outputs: the column specification generated by looking at the first 1000 rows, and the first five parsing failures. It's always a good idea to explicitly pull out the `problems()`, so you can explore them in more depth:
+
+```{r}
+problems(challenge)
+```
+
+A good strategy is to work column by column until there are no problems remaining. Here we can see that there are a lot of parsing problems with the `x` column - there are trailing characters after the integer value. That suggests we need to use a double parser instead.
+
+To fix the call, start by copying and pasting the column specification into your original call:
+
+```{r, eval = FALSE}
+challenge <- read_csv(
+  readr_example("challenge.csv"), 
+  col_types = cols(
+    x = col_integer(),
+    y = col_character()
+  )
+)
+```
+
+Then you can tweak the type of the `x` column:
+
+```{r}
+challenge <- read_csv(
+  readr_example("challenge.csv"), 
+  col_types = cols(
+    x = col_double(),
+    y = col_character()
+  )
+)
+```
+
+That fixes the first problem, but if we look at the last few rows, you'll see that they're dates stored in a character vector:
+
+```{r}
+tail(challenge)
+```
+
+You can fix that by specifying that `y` is a date column:
+
+```{r}
+challenge <- read_csv(
+  readr_example("challenge.csv"), 
+  col_types = cols(
+    x = col_double(),
+    y = col_date()
+  )
+)
+tail(challenge)
+```
+
+Every `parse_xyz()` function has a corresponding `col_xyz()` function. You use `parse_xyz()` when the data is in a character vector in R already; you use `col_xyz()` when you want to tell readr how to load the data.
+
+I highly recommend always supplying `col_types`, building up from the print-out provided by readr. This ensures that you have a consistent and reproducible data import script. If you rely on the default guesses and your data changes, readr will continue to read it in. If you want to be really strict, use `stop_for_problems()`: that will throw an error and stop your script if there are any parsing problems.
+
+### Other strategies
+
+There are a few other general strategies to help you parse files:
+
+*   In the previous example, we just got unlucky: if we look at just
+    one more row than the default, we can correctly parse in one shot:
+   
+    ```{r}
+    challenge2 <- read_csv(readr_example("challenge.csv"), guess_max = 1001)
+    challenge2
+    ```
+
+*   Sometimes it's easier to diagnose problems if you just read in all
+    the columns as character vectors:
+   
+    ```{r}
+    challenge2 <- read_csv(readr_example("challenge.csv"), 
+      col_types = cols(.default = col_character())
+    )
+    ```
+    
+    This is particularly useful in conjunction with `type_convert()`,
+    which applies the parsing heuristics to the character columns in a data
+    frame.
+
+    ```{r}
+    df <- tribble(
+      ~x,  ~y,
+      "1", "1.21",
+      "2", "2.32",
+      "3", "4.56"
+    )
+    df
+    
+    # Note the column types
+    type_convert(df)
+    ```
+    
+*   If you're reading a very large file, you might want to set `n_max` to
+    a smallish number like 10,000 or 100,000. That will accelerate your 
+    iterations while you eliminate common problems.
+
+*   If you're having major parsing problems, sometimes it's easier
+    to just read into a character vector of lines with `read_lines()`,
+    or even a character vector of length 1 with `read_file()`. Then you
+    can use the string parsing skills you'll learn later to parse
+    more exotic formats.
+
+## Writing to a file
+
+readr also comes with two useful functions for writing data back to disk: `write_csv()` and `write_tsv()`. Both functions increase the chances of the output file being read back in correctly by:
+
+* Always encoding strings in UTF-8.
+  
+* Saving dates and date-times in ISO8601 format so they are easily
+  parsed elsewhere.
+
+If you want to export a csv file to Excel, use `write_excel_csv()` --- this writes a special character (a "byte order mark") at the start of the file which tells Excel that you're using the UTF-8 encoding.
+
+The most important arguments are `x` (the data frame to save), and `path` (the location to save it). You can also specify how missing values are written with `na`, and if you want to `append` to an existing file.
+
+```{r, eval = FALSE}
+write_csv(challenge, "challenge.csv")
+```
+
+Note that the type information is lost when you save to csv:
+
+```{r, warning = FALSE}
+challenge
+write_csv(challenge, "challenge-2.csv")
+read_csv("challenge-2.csv")
+```
+
+This makes CSVs a little unreliable for caching interim results---you need to recreate the column specification every time you load in. There are two alternatives:
+
+1.  `write_rds()` and `read_rds()` are uniform wrappers around the base 
+    functions `readRDS()` and `saveRDS()`. These store data in R's custom 
+    binary format called RDS:
+    
+    ```{r}
+    write_rds(challenge, "challenge.rds")
+    read_rds("challenge.rds")
+    ```
+  
+1.  The feather package implements a fast binary file format that can
+    be shared across programming languages:
+    
+    ```{r, eval = FALSE}
+    library(feather)
+    write_feather(challenge, "challenge.feather")
+    read_feather("challenge.feather")
+    #> # A tibble: 2,000 x 2
+    #>       x      y
+    #>   <dbl> <date>
+    #> 1   404   <NA>
+    #> 2  4172   <NA>
+    #> 3  3004   <NA>
+    #> 4   787   <NA>
+    #> 5    37   <NA>
+    #> 6  2332   <NA>
+    #> # ... with 1,994 more rows
+    ```
+
+Feather tends to be faster than RDS and is usable outside of R. RDS supports list-columns (which you'll learn about in [many models]); feather currently does not.
+
+```{r, include = FALSE}
+file.remove("challenge-2.csv")
+file.remove("challenge.rds")
+```
+
+## Other types of data
+
+To get other types of data into R, we recommend starting with the tidyverse packages listed below. They're certainly not perfect, but they are a good place to start. For rectangular data:
+
+* __haven__ reads SPSS, Stata, and SAS files.
+
+* __readxl__ reads excel files (both `.xls` and `.xlsx`).
+
+* __DBI__, along with a database specific backend (e.g. __RMySQL__, 
+  __RSQLite__, __RPostgreSQL__ etc) allows you to run SQL queries against a 
+  database and return a data frame.
+
+For hierarchical data: use __jsonlite__ (by Jeroen Ooms) for json, and __xml2__ for XML. Jenny Bryan has some excellent worked examples at <https://jennybc.github.io/purrr-tutorial/>.
+
+For other file types, try the [R data import/export manual](https://cran.r-project.org/doc/manuals/r-release/R-data.html) and the [__rio__](https://github.com/leeper/rio) package.
