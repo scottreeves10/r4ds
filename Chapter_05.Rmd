@@ -1,8 +1,9 @@
 ---
 title: "Chapter 5 - Exploratory Data Analysis"
-#date: 2018-01-18
+author: Scott Reeves
 output: 
   html_document: 
+    #theme: flatly
     toc: true
     toc_float: true
     toc_depth: 5
