@@ -1,6 +1,7 @@
 ---
 title: "Chapter 1 - Data Visualization with ggplot2"
-date: 2018-01-16
+author: Scott Reeves
+# date: 2018-01-16
 output: 
   html_document: 
     toc: true
@@ -15,9 +16,9 @@ output:
 set.seed(1014)
 #options(digits = 3)
 
-knitr::opts_chunk$set(comment = "#>",collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 6,fig.asp = 0.618)
+knitr::opts_chunk$set(comment = "#>",collapse = TRUE,cache = TRUE,out.width = "70%",fig.align = 'center',fig.width = 7,fig.asp = 0.618)
 
-options(dplyr.print_min = 6, dplyr.print_max = 6)
+options(dplyr.print_min = 5, dplyr.print_max = 5)
 ```
 
 ## Introduction
@@ -104,37 +105,40 @@ The rest of this chapter will show you how to complete and extend this template 
 
 ### Exercises
 
-1.  Run `ggplot(data = mpg)`. What do you see?
+1.  <span style="color:blue">Run `ggplot(data = mpg)`. What do you see?</span>
 
 ```{r eval=FALSE}
 ggplot(data = mpg) #An empty graph / a gray box / an empty coordinate system
 ```
 
-2.  How many rows are in `mpg`? How many columns?
+2.  <span style="color:blue">How many rows are in `mpg`? How many columns?</span>
 
 ```{r}
 dim(mpg)
 ```
 
-3.  What does the `drv` variable describe?  Read the help for `?mpg` to find
-    out.
+3.  <span style="color:blue">What does the `drv` variable describe?  Read the help for `?mpg` to find
+    out.</span>
     
 ```{r}
 ?mpg
+
+# drv
+# f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+
 ```
 
-drv
-f = front-wheel drive, r = rear wheel drive, 4 = 4wd
      
-4.  Make a scatterplot of `hwy` vs `cyl`.
+4.  <span style="color:blue">Make a scatterplot of `hwy` vs `cyl`.</span>
+
 ```{r}
 ggplot(mpg) +
   geom_point(aes(cyl, hwy))
 ```
 
 
-5.  What happens if you make a scatterplot of `class` vs `drv`? Why is
-    the plot not useful?
+5.  <span style="color:blue">What happens if you make a scatterplot of `class` vs `drv`? Why is
+    the plot not useful?</span>
     
 ```{r}
 ggplot(mpg) +
@@ -241,7 +245,7 @@ ggplot(shapes, aes(x, y)) +
 
 ### Exercises
 
-1.  What's gone wrong with this code? Why are the points not blue?
+1.  <span style="color:blue">What's gone wrong with this code? Why are the points not blue?
 
     ```{r}
     ggplot(data = mpg) + 
@@ -254,45 +258,41 @@ ggplot(data = mpg) +
 ```
 
 
-1.  Which variables in `mpg` are categorical? Which variables are continuous? 
+1.  <span style="color:blue">Which variables in `mpg` are categorical? Which variables are continuous? 
     (Hint: type `?mpg` to read the documentation for the dataset). How
     can you see this information when you run `mpg`?
     
-```{r }
-str(mpg) # all vars are categorical except cty and hwy
-```
+    ```{r }
+    str(mpg) # all vars are categorical except cty and hwy
+    ```
     
 
-2.  Map a continuous variable to `color`, `size`, and `shape`. How do
+1.  <span style="color:blue">Map a continuous variable to `color`, `size`, and `shape`. How do
     these aesthetics behave differently for categorical vs. continuous
     variables? 
-
-
     
-```{r}
-ggplot(mpg) +
-  geom_point(aes(displ, cty, color = hwy))
-```
-```{r}
-ggplot(mpg) +
-  geom_point(aes(displ, cty, size = hwy))
-```
+    ```{r}
+    ggplot(mpg) +
+      geom_point(aes(displ, cty, color = hwy))
+    ```
     
-```{r eval=FALSE}
-ggplot(mpg) +
-  geom_point(aes(displ, cty, shape = hwy)) #Will not work. A continuous var cannot be mapped to a shape.
-```
-
-
-
-
-2.  What happens if you map the same variable to multiple aesthetics? 
-
-3.  What does the `stroke` aesthetic do? What shapes does it work with?
-    (Hint: use `?geom_point`)
+    ```{r}
+    ggplot(mpg) +
+      geom_point(aes(displ, cty, size = hwy))
+    ```
     
-4.  What happens if you map an aesthetic to something other than a variable 
-    name, like `aes(colour = displ < 5)`?  
+    ```{r eval=FALSE}
+    ggplot(mpg) +
+      geom_point(aes(displ, cty, shape = hwy)) #Will not work. A continuous var cannot be mapped to a shape.
+    ```
+
+1.  <span style="color:blue">What happens if you map the same variable to multiple aesthetics? </span>
+
+1.  <span style="color:blue">What does the `stroke` aesthetic do? What shapes does it work with?
+    (Hint: use `?geom_point`)</span>
+    
+1.  <span style="color:blue">What happens if you map an aesthetic to something other than a variable 
+    name, like `aes(colour = displ < 5)`? </span> 
 
 ## Common problems
 
@@ -335,9 +335,9 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
 
 ### Exercises
 
-1.  What happens if you facet on a continuous variable?
+1.  <span style="color:blue">What happens if you facet on a continuous variable?
 
-1.  What do the empty cells in plot with `facet_grid(drv ~ cyl)` mean?
+1.  <span style="color:blue">What do the empty cells in plot with `facet_grid(drv ~ cyl)` mean?
     How do they relate to this plot?
     
     ```{r}
@@ -345,7 +345,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       geom_point(mapping = aes(x = drv, y = cyl))
     ```
 
-1.  What plots does the following code make? What does `.` do?
+1.  <span style="color:blue">What plots does the following code make? What does `.` do?</span>
 
     ```{r}
     ggplot(data = mpg) + 
@@ -357,7 +357,7 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
       facet_grid(. ~ cyl)
     ```
 
-1.  Take the first faceted plot in this section:
+1.  <span style="color:blue">Take the first faceted plot in this section:</span>
 
     ```{r}
     ggplot(data = mpg) + 
@@ -369,12 +369,12 @@ If you prefer to not facet in the rows or columns dimension, use a `.` instead o
     What are the disadvantages? How might the balance change if you had a 
     larger dataset?
     
-1.  Read `?facet_wrap`. What does `nrow` do? What does `ncol` do? What other
+1.  <span style="color:blue">Read `?facet_wrap`. What does `nrow` do? What does `ncol` do? What other
     options control the layout of the individual panels? Why doesn't
-    `facet_grid()` have `nrow` and `ncol` argument?
+    `facet_grid()` have `nrow` and `ncol` argument?</span>
 
-1.  When using `facet_grid()` you should usually put the variable with more
-    unique levels in the columns. Why?
+1.  <span style="color:blue">When using `facet_grid()` you should usually put the variable with more
+    unique levels in the columns. Why?</span>
 
 ## Geometric objects
 
@@ -477,11 +477,11 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 ### Exercises
 
-1.  What geom would you use to draw a line chart? A boxplot? 
-    A histogram? An area chart?
+1.  <span style="color:blue">What geom would you use to draw a line chart? A boxplot? 
+    A histogram? An area chart?</span>
 
-1.  Run this code in your head and predict what the output will look like.
-    Then, run the code in R and check your predictions.
+1.  <span style="color:blue">Run this code in your head and predict what the output will look like.
+    Then, run the code in R and check your predictions.</span>
     
     ```{r, eval = FALSE}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
@@ -489,13 +489,13 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
       geom_smooth(se = FALSE)
     ```
 
-1.  What does `show.legend = FALSE` do?  What happens if you remove it?  
-    Why do you think I used it earlier in the chapter?
+1.  <span style="color:blue">What does `show.legend = FALSE` do?  What happens if you remove it?  
+    Why do you think I used it earlier in the chapter?</span>
 
-1.  What does the `se` argument to `geom_smooth()` do?
+1.  <span style="color:blue">What does the `se` argument to `geom_smooth()` do?</span>
 
 
-1.  Will these two graphs look different? Why/why not?
+1.  <span style="color:blue">Will these two graphs look different? Why/why not?</span>
 
     ```{r, eval = FALSE}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
@@ -507,24 +507,39 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
       geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
     ```
 
-1.  Recreate the R code necessary to generate the following graphs.
+1.  <span style="color:blue">Recreate the R code necessary to generate the following graphs.</span>
     
-    ```{r echo = FALSE, fig.width = 3, out.width = "50%", fig.align = "default", message = FALSE}
+    ```{r echo=FALSE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
       geom_point() + 
       geom_smooth(se = FALSE)
+    ```
+    
+    ```{r echo=TRUE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
       geom_smooth(aes(group = drv), se = FALSE) +
       geom_point()
+    ```
+    
+    ```{r echo=TRUE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
       geom_point() + 
       geom_smooth(se = FALSE)
+    ```
+    
+    ```{r echo=TRUE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
       geom_point(aes(color = drv)) + 
       geom_smooth(se = FALSE)
+    ```
+    
+    ```{r echo=TRUE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
       geom_point(aes(color = drv)) +
       geom_smooth(aes(linetype = drv), se = FALSE)
+    ```
+    
+    ```{r echo=TRUE, fig.align="default", fig.width=3, message=FALSE, out.width="50%"}
     ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
       geom_point(size = 4, colour = "white") + 
       geom_point(aes(colour = drv))
@@ -624,21 +639,21 @@ ggplot2 provides over 20 stats for you to use. Each stat is a function, so you c
 
 ### Exercises
 
-1.  What is the default geom associated with `stat_summary()`? How could
+1.  <span style="color:blue">What is the default geom associated with `stat_summary()`? How could
     you rewrite the previous plot to use that geom function instead of the 
-    stat function?
+    stat function?</span>
 
-1.  What does `geom_col()` do? How is it different to `geom_bar()`?
+1.  <span style="color:blue">What does `geom_col()` do? How is it different to `geom_bar()`?</span>
 
-1.  Most geoms and stats come in pairs that are almost always used in 
+1.  <span style="color:blue">Most geoms and stats come in pairs that are almost always used in 
     concert. Read through the documentation and make a list of all the 
-    pairs. What do they have in common?
+    pairs. What do they have in common?</span>
 
-1.  What variables does `stat_smooth()` compute? What parameters control
-    its behaviour?
+1.  <span style="color:blue">What variables does `stat_smooth()` compute? What parameters control
+    its behaviour?</span>
 
-1.  In our proportion bar chart, we need to set `group = 1`. Why? In other
-    words what is the problem with these two graphs?
+1.  <span style="color:blue">In our proportion bar chart, we need to set `group = 1`. Why? In other
+    words what is the problem with these two graphs?</span>
     
     ```{r, eval = FALSE}
     ggplot(data = diamonds) + 
@@ -723,19 +738,19 @@ To learn more about a position adjustment, look up the help page associated with
 
 ### Exercises
 
-1.  What is the problem with this plot? How could you improve it?
+1.  <span style="color:blue">What is the problem with this plot? How could you improve it?</span>
 
     ```{r}
     ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
       geom_point()
     ```
 
-1.  What parameters to `geom_jitter()` control the amount of jittering?
+1.  <span style="color:blue">What parameters to `geom_jitter()` control the amount of jittering?</span>
 
-1.  Compare and contrast `geom_jitter()` with `geom_count()`.
+1.  <span style="color:blue">Compare and contrast `geom_jitter()` with `geom_count()`.</span>
 
-1.  What's the default position adjustment for `geom_boxplot()`? Create
-    a visualisation of the `mpg` dataset that demonstrates it.
+1.  <span style="color:blue">What's the default position adjustment for `geom_boxplot()`? Create
+    a visualisation of the `mpg` dataset that demonstrates it.</span>
 
 ## Coordinate systems
 
@@ -787,15 +802,14 @@ Coordinate systems are probably the most complicated part of ggplot2. The defaul
 
 ### Exercises
 
-1.  Turn a stacked bar chart into a pie chart using `coord_polar()`.
+1.  <span style="color:blue">Turn a stacked bar chart into a pie chart using `coord_polar()`.</span>
 
-1.  What does `labs()` do? Read the documentation.
+1.  <span style="color:blue">What does `labs()` do? Read the documentation.</span>
 
-1.  What's the difference between `coord_quickmap()` and `coord_map()`?
+1.  <span style="color:blue">What's the difference between `coord_quickmap()` and `coord_map()`?</span>
 
-1.  What does the plot below tell you about the relationship between city
-    and highway mpg? Why is `coord_fixed()` important? What does 
-    `geom_abline()` do?
+1.  <span style="color:blue">What does the plot below tell you about the relationship between city
+    and highway mpg? Why is `coord_fixed()` important? What does `geom_abline()` do?</span>
     
     ```{r, fig.asp = 1, out.width = "50%"}
     ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
