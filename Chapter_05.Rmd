@@ -330,15 +330,9 @@ If you've encountered unusual values in your dataset, and simply want to move on
       filter(between(y, 3, 20))
     ```
     
-    __I don't recommend this option__ because just because one measurement
-    is invalid, doesn't mean all the measurements are. Additionally, if you
-    have low quality data, by time that you've applied this approach to every
-    variable you might find that you don't have any data left!
+    __I don't recommend this option__ because just because one measurement is invalid, doesn't mean all the measurements are. Additionally, if you have low quality data, by time that you've applied this approach to every variable you might find that you don't have any data left!
 
-1.  Instead, I recommend replacing the unusual values with missing values.
-    The easiest way to do this is to use `mutate()` to replace the variable
-    with a modified copy. You can use the `ifelse()` function to replace
-    unusual values with `NA`:
+1.  Instead, I recommend replacing the unusual values with missing values. The easiest way to do this is to use `mutate()` to replace the variable with a modified copy. You can use the `ifelse()` function to replace unusual values with `NA`:
 
     ```{r}
     diamonds2 <- diamonds %>% 
@@ -391,9 +385,9 @@ However this plot isn't great because there are many more non-cancelled flights 
     What happens to missing values in a bar chart? - They are removed with a warning
     
     Why is there a difference? 
-    geom_histogram: stat_bin bins data in ranges and counts the cases in each range. 
-    geom_bar: stat_count counts the number of cases at each x position (without binning into ranges). 
-    stat_bin requires continuous x data, whereas stat_count can be used for both discrete and continuous x data.
+    - geom_histogram: stat_bin bins data in ranges and counts the cases in each range. 
+    - geom_bar: stat_count counts the number of cases at each x position (without binning into ranges). 
+    - stat_bin requires continuous x data, whereas stat_count can be used for both discrete and continuous x data.
 
     ```{r eval=FALSE}
     ?geom_histogram 
@@ -632,21 +626,87 @@ ggplot(data = mpg) +
     ```
 
 
-1.  <span style="color:blue">One problem with boxplots is that they were developed in an era of 
-    much smaller datasets and tend to display a prohibitively large
-    number of "outlying values". One approach to remedy this problem is
-    the letter value plot. Install the lvplot package, and try using
-    `geom_lv()` to display the distribution of price vs cut. What
-    do you learn? How do you interpret the plots?</span>
+1.  <span style="color:blue">One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of "outlying values". One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using `geom_lv()` to display the distribution of price vs cut. What do you learn? How do you interpret the plots?</span>
 
-1.  <span style="color:blue">Compare and contrast `geom_violin()` with a facetted `geom_histogram()`,
-    or a coloured `geom_freqpoly()`. What are the pros and cons of each 
-    method?</span>
+    ```{r eval=FALSE}
+    install.packages("lvplot")
+    
+    ```
+    
+    ```{r}
+    # geom_lv() ----
+    ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+      geom_lv()
+    
+    ```
 
-1.  <span style="color:blue">If you have a small dataset, it's sometimes useful to use `geom_jitter()`to see the relationship between a continuous and categorical variable.
-    The ggbeeswarm package provides a number of methods similar to 
-    `geom_jitter()`. List them and briefly describe what each one does.</span>
 
+1.  <span style="color:blue">Compare and contrast `geom_violin()` with a facetted `geom_histogram()`, or a coloured `geom_freqpoly()`. What are the pros and cons of each method?</span>
+    
+    A violin plot is a compact display of a continuous distribution. It is a blend of geom_boxplot and geom_density: a violin plot is a mirrored density plot displayed in the same way as a boxplot.
+    
+    Two vars, Discrete X, Continuous Y
+    ```{r}
+    ggplot(data = diamonds) +
+      geom_violin(aes(clarity, price))
+    
+    ```
+    
+    A histogram plot visualises the distribution of a single Continuous X variable by dividing the x axis into bins and counting the number of observations in each bin.
+    ```{r}
+    ggplot(data = diamonds) +
+      geom_histogram(mapping = aes(x = price), binwidth = 100) +
+      facet_wrap(~ clarity)
+    
+    ```
+    
+    Frequency polygons display the counts with lines. Frequency polygons are more suitable when you want to compare the distribution across a the levels of a categorical variable.
+    
+    Single Continuous X
+    ```{r}
+    ggplot(data = diamonds) +
+      geom_freqpoly(mapping = aes(x = price, color = clarity), binwidth = 100)
+    
+    ```
+    
+1.  <span style="color:blue">If you have a small dataset, it's sometimes useful to use `geom_jitter()`to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to `geom_jitter()`. List them and briefly describe what each one does.</span>
+    
+    As for geom_jiter, it is a convenient shortcut for geom_point(position = "jitter"). It adds a small amount of random variation to the location of each point, and is a useful way of handling overplotting caused by discreteness in smaller datasets.
+    
+    ```{r}
+    ggplot(data = mpg, mapping = aes(class, hwy)) +
+      geom_jitter()
+    
+    ```
+    
+    ```{r}
+    ggplot(data = mpg, mapping = aes(class, hwy)) +
+      geom_beeswarm()
+    
+    ```
+    
+    ```{r}
+    ggplot(data = mpg, mapping = aes(class, hwy)) +
+      geom_quasirandom()
+    
+    ```
+    
+    ```{r}
+    ggplot(data = mpg, mapping = aes(class, hwy)) +
+      geom_beeswarm() +
+      geom_quasirandom(width = .1)
+    
+    ```
+    
+    ```{r}
+    ggplot(data = mpg, mapping = aes(class, hwy, color = factor(cyl))) +
+      geom_beeswarm() 
+      #+ geom_quasirandom()
+    
+    ```
+    
+    Many other alternative methods at https://github.com/eclarke/ggbeeswarm
+    
 ### Two categorical variables
 
 To visualise the covariation between categorical variables, you'll need to count the number of observations for each combination. One way to do that is to rely on the built-in `geom_count()`:
