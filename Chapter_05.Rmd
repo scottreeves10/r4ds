@@ -738,15 +738,172 @@ If the categorical variables are unordered, you might want to use the seriation 
 
 #### Exercises
 
-1.  <span style="color:blue">How could you rescale the count dataset above to more clearly show
-    the distribution of cut within colour, or colour within cut?</span>
+1.  <span style="color:blue">How could you rescale the count dataset above to more clearly show the distribution of cut within colour, or colour within cut?</span>
+    
+    I need to re-do this answer with proper rescaling, rather than aesthetics.
+    ```{r}
+    # original
+    diamonds %>% 
+      count(color, cut)
+    
+    ```
+    
+    ```{r}
+    # cut within color
+    diamonds %>%
+      group_by(color) %>% 
+      count(cut)
+    
+    ```
+    
+    ```{r}
+    # color within cut
+    diamonds %>%
+      group_by(cut) %>% 
+      count(color)
+    
+    ```
+    
+    ```{r}
+    # scale_fill_gradient2() ----
+    diamonds %>% 
+      count(color, cut) %>%  
+      ggplot(mapping = aes(x = color, y = cut)) +
+        geom_tile(mapping = aes(fill = n)) +
+      scale_fill_gradient2()
+    
+    ```
+    
+1.  <span style="color:blue">Use `geom_tile()` together with dplyr to explore how average flight delays vary by destination and month of year.  What makes the plot difficult to read? How could you improve it?</span>
+    
+    ```{r}
+    flights %>% 
+      group_by(month, dest) %>% 
+      summarize(
+        avg = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      ggplot(data = ggg, mapping = aes(x = month, y = dest)) +
+      geom_tile(mapping = aes(fill = avg))
+    
+    # Too many data points to make sense of, and the months need to be factors.
+    
+    ```
+    
+    ```{r}
+    # factor month
+    flights %>% 
+      group_by(month, dest) %>% 
+      summarize(
+        avg = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      ggplot(data = ggg, mapping = aes(x = factor(month), y = dest)) +
+      geom_tile(mapping = aes(fill = avg))
+    
+    ```
+    
+    ```{r}
+    # filter out less common destinations
+    
+    flights %>% 
+      group_by(month, dest) %>% 
+      summarize(
+        n = n(),
+        avg = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      filter(n > 500) %>% 
+      ggplot(mapping = aes(x = factor(month), y = dest)) +
+      geom_tile(mapping = aes(fill = avg))
+    # This does not look right. What is the missing data, e.g., for SJU in Jan and Feb?
+    # Find out...
+    
+    ```
+    
+    ```{r}
+    flights %>% 
+      group_by(month, dest) %>% 
+      summarize(
+        n = n(),
+        avg = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      filter(dest == 'SJU')
+    # The missing data is for month-dest combos where there were less than 500 flights.
+    # Therefore, we need to filter by the destinations with the most total flights in the year.
+    
+    ```
+    
+    ```{r}
+    flights %>% 
+      group_by(dest) %>% 
+      summarize(
+        n = n()
+      ) %>% 
+      arrange(desc(n))
+    # the top 10 dests had more than 9700 flights
+    
+    ```
+    
+    ```{r}
+    top_10_dests <- flights %>% 
+      group_by(dest) %>% 
+      summarize(
+        n = n()
+      ) %>% 
+      filter(n > 9700)
+    
+    top_10_dests
+    ```
+    
+    ```{r}
+    flights %>% 
+      filter(dest %in% top_10_dests$dest) %>% 
+      group_by(dest, month) %>% 
+      summarize(
+        avg_dep_delay = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      ggplot(mapping = aes(x = factor(month), y = dest)) +
+      geom_tile(mapping = aes(fill = avg_dep_delay))
+      #scale_fill_gradientn(colours = terrain.colors(12))
+      # the one below happens to be the default
+      #scale_fill_gradient(low = "#132B43", high = "#56B1F7", space = "Lab", na.value = "grey50", guide = "colourbar")
+    
+    ```
+    
+    The highest average departure delays by month at the the top 10 destinations are Atlanta and San Francisco, both in July. Possibly this could be due to thunderstorms (Atlanta) and fog (San Francisco). 
+    
+    The lowest average departure delays across the board appear to be in November. Possibly this could be due to airlines emphasizing minimal delays during holiday travel and staffing accordingly.
+    
+    ```{r}
+    flights %>% 
+      filter(dest %in% top_10_dests$dest) %>% 
+      group_by(month) %>% 
+      summarize(
+        avg_dep_delay = mean(dep_delay, na.rm = "TRUE")
+      ) %>% 
+      arrange(avg_dep_delay)
+    # Confirms November has the lowest average departure delays across the board as above.
+    
+    ```
+    
+1.  <span style="color:blue">Why is it slightly better to use `aes(x = color, y = cut)` rather than `aes(x = cut, y = color)` in the example above?</span>
 
-1.  <span style="color:blue">Use `geom_tile()` together with dplyr to explore how average flight
-    delays vary by destination and month of year.  What makes the 
-    plot difficult to read? How could you improve it?</span>
+    ```{r}
+    diamonds %>% 
+      count(color, cut) %>% 
+      ggplot(mapping = aes(x = color, y = cut)) +
+      geom_tile(mapping = aes(fill = n))
+    
+    ```
+    
+    ```{r}
+    diamonds %>% 
+      count(color, cut) %>% 
+      ggplot(mapping = aes(x = cut, y = color)) +
+      geom_tile(mapping = aes(fill = n))
+    
+    ```
+    
+    Because in this particular case the lables for the colors are shorter, thus creating a narrower column width across the x-axis which results in a more visually pleasing presentation such that the width of each tile is less than the height.
 
-1.  <span style="color:blue">Why is it slightly better to use `aes(x = color, y = cut)` rather
-    than `aes(x = cut, y = color)` in the example above?</span>
 
 ### Two continuous variables
 
@@ -796,23 +953,15 @@ ggplot(data = smaller, mapping = aes(x = carat, y = price)) +
 
 #### Exercises
 
-1.  <span style="color:blue">Instead of summarising the conditional distribution with a boxplot, you
-    could use a frequency polygon. What do you need to consider when using
-    `cut_width()` vs `cut_number()`? How does that impact a visualisation of
-    the 2d distribution of `carat` and `price`?</span>
+1.  <span style="color:blue">Instead of summarising the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using `cut_width()` vs `cut_number()`? How does that impact a visualisation of the 2d distribution of `carat` and `price`?</span>
 
 1.  <span style="color:blue">Visualise the distribution of carat, partitioned by price.</span>
 
-1.  <span style="color:blue">How does the price distribution of very large diamonds compare to small 
-    diamonds. Is it as you expect, or does it surprise you?</span>
+1.  <span style="color:blue">How does the price distribution of very large diamonds compare to small diamonds. Is it as you expect, or does it surprise you?</span>
     
-1.  <span style="color:blue">Combine two of the techniques you've learned to visualise the 
-    combined distribution of cut, carat, and price.</span>
+1.  <span style="color:blue">Combine two of the techniques you've learned to visualise the combined distribution of cut, carat, and price.</span>
 
-1. <span style="color:blue">Two dimensional plots reveal outliers that are not visible in one 
-   dimensional plots. For example, some points in the plot below have an 
-   unusual combination of `x` and `y` values, which makes the points outliers 
-   even though their `x` and `y` values appear normal when examined separately.</span>
+1. <span style="color:blue">Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the plot below have an unusual combination of `x` and `y` values, which makes the points outliers even though their `x` and `y` values appear normal when examined separately.</span>
   
     ```{r, dev = "png"}
     ggplot(data = diamonds) +
