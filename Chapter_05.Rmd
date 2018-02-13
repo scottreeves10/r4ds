@@ -391,10 +391,9 @@ However this plot isn't great because there are many more non-cancelled flights 
 
 ### Exercises
 
-1.  What happens to missing values in a histogram?  What happens to missing
-    values in a bar chart? Why is there a difference?
+1.  <span style="color:blue">What happens to missing values in a histogram?  What happens to missing values in a bar chart? Why is there a difference?</span>
 
-1.  What does `na.rm = TRUE` do in `mean()` and `sum()`?
+1.  <span style="color:blue">What does `na.rm = TRUE` do in `mean()` and `sum()`?</span>
 
 ## Covariation
 
@@ -480,32 +479,30 @@ ggplot(data = mpg) +
 
 #### Exercises
 
-1.  Use what you've learned to improve the visualisation of the departure times
-    of cancelled vs. non-cancelled flights.
+1.  <span style="color:blue">Use what you've learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.</span>
 
-1.  What variable in the diamonds dataset is most important for predicting
+1.  <span style="color:blue">What variable in the diamonds dataset is most important for predicting
     the price of a diamond? How is that variable correlated with cut?
     Why does the combination of those two relationships lead to lower quality
-    diamonds being more expensive?
+    diamonds being more expensive?</span>
 
-1.  Install the ggstance package, and create a horizontal boxplot.
-    How does this compare to using `coord_flip()`?
+1.  <span style="color:blue">Install the ggstance package, and create a horizontal boxplot.
+    How does this compare to using `coord_flip()`?</span>
 
-1.  One problem with boxplots is that they were developed in an era of 
+1.  <span style="color:blue">One problem with boxplots is that they were developed in an era of 
     much smaller datasets and tend to display a prohibitively large
     number of "outlying values". One approach to remedy this problem is
     the letter value plot. Install the lvplot package, and try using
     `geom_lv()` to display the distribution of price vs cut. What
-    do you learn? How do you interpret the plots?
+    do you learn? How do you interpret the plots?</span>
 
-1.  Compare and contrast `geom_violin()` with a facetted `geom_histogram()`,
+1.  <span style="color:blue">Compare and contrast `geom_violin()` with a facetted `geom_histogram()`,
     or a coloured `geom_freqpoly()`. What are the pros and cons of each 
-    method?
+    method?</span>
 
-1.  If you have a small dataset, it's sometimes useful to use `geom_jitter()`
-    to see the relationship between a continuous and categorical variable.
+1.  <span style="color:blue">If you have a small dataset, it's sometimes useful to use `geom_jitter()`to see the relationship between a continuous and categorical variable.
     The ggbeeswarm package provides a number of methods similar to 
-    `geom_jitter()`. List them and briefly describe what each one does.
+    `geom_jitter()`. List them and briefly describe what each one does.</span>
 
 ### Two categorical variables
 
@@ -538,15 +535,15 @@ If the categorical variables are unordered, you might want to use the seriation 
 
 #### Exercises
 
-1.  How could you rescale the count dataset above to more clearly show
-    the distribution of cut within colour, or colour within cut?
+1.  <span style="color:blue">How could you rescale the count dataset above to more clearly show
+    the distribution of cut within colour, or colour within cut?</span>
 
-1.  Use `geom_tile()` together with dplyr to explore how average flight
+1.  <span style="color:blue">Use `geom_tile()` together with dplyr to explore how average flight
     delays vary by destination and month of year.  What makes the 
-    plot difficult to read? How could you improve it?
+    plot difficult to read? How could you improve it?</span>
 
-1.  Why is it slightly better to use `aes(x = color, y = cut)` rather
-    than `aes(x = cut, y = color)` in the example above?
+1.  <span style="color:blue">Why is it slightly better to use `aes(x = color, y = cut)` rather
+    than `aes(x = cut, y = color)` in the example above?</span>
 
 ### Two continuous variables
 
@@ -596,23 +593,23 @@ ggplot(data = smaller, mapping = aes(x = carat, y = price)) +
 
 #### Exercises
 
-1.  Instead of summarising the conditional distribution with a boxplot, you
+1.  <span style="color:blue">Instead of summarising the conditional distribution with a boxplot, you
     could use a frequency polygon. What do you need to consider when using
     `cut_width()` vs `cut_number()`? How does that impact a visualisation of
-    the 2d distribution of `carat` and `price`?
+    the 2d distribution of `carat` and `price`?</span>
 
-1.  Visualise the distribution of carat, partitioned by price.
+1.  <span style="color:blue">Visualise the distribution of carat, partitioned by price.</span>
 
-1.  How does the price distribution of very large diamonds compare to small 
-    diamonds. Is it as you expect, or does it surprise you?
+1.  <span style="color:blue">How does the price distribution of very large diamonds compare to small 
+    diamonds. Is it as you expect, or does it surprise you?</span>
     
-1.  Combine two of the techniques you've learned to visualise the 
-    combined distribution of cut, carat, and price.
+1.  <span style="color:blue">Combine two of the techniques you've learned to visualise the 
+    combined distribution of cut, carat, and price.</span>
 
-1. Two dimensional plots reveal outliers that are not visible in one 
+1. <span style="color:blue">Two dimensional plots reveal outliers that are not visible in one 
    dimensional plots. For example, some points in the plot below have an 
    unusual combination of `x` and `y` values, which makes the points outliers 
-   even though their `x` and `y` values appear normal when examined separately.
+   even though their `x` and `y` values appear normal when examined separately.</span>
   
     ```{r, dev = "png"}
     ggplot(data = diamonds) +
@@ -620,7 +617,7 @@ ggplot(data = smaller, mapping = aes(x = carat, y = price)) +
       coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
     ```
     
-    Why is a scatterplot a better display than a binned plot for this case?
+    <span style="color:blue">Why is a scatterplot a better display than a binned plot for this case?</span>
 
 ## Patterns and models
 
