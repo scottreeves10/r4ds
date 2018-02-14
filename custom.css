@@ -1,3 +1,8 @@
 .question {
     color:blue;
 }
+
+.emph {
+    color:magenta;
+    text-decoration: bold;
+}

@@ -1,11 +1,13 @@
 ---
 title: "Chapter 9 - Tidy Data with tidyr"
 author: Scott Reeves
+#theme: NULL
 output: 
   html_document: 
-    toc: true
-    toc_float: true
+    css: custom.css
+    toc: yes
     toc_depth: 4
+    toc_float: yes
 ---
 
 ```{r knitr, include=FALSE}
@@ -52,7 +54,9 @@ table4b  # population
 
 These are all representations of the same underlying data, but they are not equally easy to use. One dataset, the tidy dataset, will be much easier to work with inside the tidyverse. 
 
-There are three interrelated rules which make a dataset tidy:
+### Tidy rules
+
+There are <span class="emph">three interrelated rules</span> which make a dataset tidy:
 
 1.  Each variable must have its own column.
 1.  Each observation must have its own row.
@@ -103,40 +107,47 @@ ggplot(table1, aes(year, cases)) +
 
 ### Exercises
 
-1.  Using prose, describe how the variables and observations are organised in
-    each of the sample tables.
+1.  <span class="question">Using prose, describe how the variables and observations are organised in each of the sample tables.</span>
 
-1.  Compute the `rate` for `table2`, and `table4a` + `table4b`. 
-    You will need to perform four operations:
+    Table 1 - is tidy
+    Table 2 - each variable does not have its own column
+    Table 3 - each variable does not have its own column, nor does each value does not have its own cell
+    Table 4a, 4b - each variable does not have its own column, nor does each value does not have its own cell, nor does each observatioin have its own row
 
-    1.  Extract the number of TB cases per country per year.
-    1.  Extract the matching population per country per year.
-    1.  Divide cases by population, and multiply by 10000.
-    1.  Store back in the appropriate place.
+1.  <span class="question">Compute the `rate` for `table2`, and `table4a` + `table4b`. You will need to perform four operations:</span>
+
+    1.  <span class="question">Extract the number of TB cases per country per year.</span>
+    1.  <span class="question">Extract the matching population per country per year.</span>
+    1.  <span class="question">Divide cases by population, and multiply by 10000.</span>
+    1.  <span class="question">Store back in the appropriate place.</span>
     
-    Which representation is easiest to work with? Which is hardest? Why?
+    <span class="question">Which representation is easiest to work with? Which is hardest? Why?</span>
+    
+    _I'll pass on this. Point taken. Tidy data is closely related to the idea of database normalization. Prefer to spend time proceeding with the productive ways to do things._ 
+    
 
-1.  Recreate the plot showing change in cases over time using `table2`
-    instead of `table1`. What do you need to do first?
+1.  <span class="question">Recreate the plot showing change in cases over time using `table2`instead of `table1`. What do you need to do first?</span>
+
+    _As above_
 
 ## Spreading and gathering
 
 The principles of tidy data seem so obvious that you might wonder if you'll ever encounter a dataset that isn't tidy. Unfortunately, however, most data that you will encounter will be untidy. There are two main reasons:
 
-1.  Most people aren't familiar with the principles of tidy data, and it's hard
-    to derive them yourself unless you spend a _lot_ of time working with data.
+1.  Most people aren't familiar with the principles of tidy data, and it's hard to derive them yourself unless you spend a _lot_ of time working with data.
     
-1.  Data is often organised to facilitate some use other than analysis. For 
-    example, data is often organised to make entry as easy as possible.
+1.  Data is often organised to facilitate some use other than analysis. For example, data is often organised to make entry as easy as possible.
     
-This means for most real analyses, you'll need to do some tidying. The first step is always to figure out what the variables and observations are. Sometimes this is easy; other times you'll need to consult with the people who originally generated the data. 
-The second step is to resolve one of two common problems:
+This means for most real analyses, you'll need to do some tidying. The <span class="emph">first step</span> is always to figure out what the variables and observations are. Sometimes this is easy; other times you'll need to consult with the people who originally generated the data. 
+The <span class="emph">second step</span> is to resolve one of two common problems:
 
 1. One variable might be spread across multiple columns.
 
 1. One observation might be scattered across multiple rows.
 
-Typically a dataset will only suffer from one of these problems; it'll only suffer from both if you're really unlucky! To fix these problems, you'll need the two most important functions in tidyr: `gather()` and `spread()`.
+#### `gather()` and `spread()`
+
+Typically a dataset will only suffer from one of these problems; it'll only suffer from both if you're really unlucky! To fix these problems, you'll need the <span class="emph">two most important functions in tidyr</span>: `gather()` and `spread()`.
 
 ### Gathering
 
@@ -148,14 +159,11 @@ table4a
 
 To tidy a dataset like this, we need to __gather__ those columns into a new pair of variables. To describe that operation we need three parameters:
 
-* The set of columns that represent values, not variables. In this example, 
-  those are the columns `1999` and `2000`.
+* The set of columns that represent values, not variables. In this example, those are the columns `1999` and `2000`.
 
-* The name of the variable whose values form the column names. I call that
-  the `key`, and here it is `year`.
+* The name of the variable whose values form the column names. I call that the `key`, and here it is `year`.
 
-* The name of the variable whose values are spread over the cells. I call 
-  that `value`, and here it's the number of `cases`.
+* The name of the variable whose values are spread over the cells. I call that `value`, and here it's the number of `cases`.
   
 Together those parameters generate the call to `gather()`:
 
@@ -170,7 +178,7 @@ The columns to gather are specified with `dplyr::select()` style notation. Here 
 knitr::include_graphics("images/tidy-9.png")
 ```
 
-In the final result, the gathered columns are dropped, and we get new `key` and `value` columns. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
+In the final result, <span class="emph">the gathered columns are dropped</span>, and we get <span class="emph">new `key` and `value` columns<span/>. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
 
 ```{r}
 table4b %>% 
@@ -217,8 +225,7 @@ As you might have guessed from the common `key` and `value` arguments, `spread()
 
 ### Exercises
 
-1.  Why are `gather()` and `spread()` not perfectly symmetrical?  
-    Carefully consider the following example:
+1.  <span class="question">Why are `gather()` and `spread()` not perfectly symmetrical? Carefully consider the following example:</span>
     
     ```{r, eval = FALSE}
     stocks <- tibble(
@@ -231,20 +238,18 @@ As you might have guessed from the common `key` and `value` arguments, `spread()
       gather("year", "return", `2015`:`2016`)
     ```
     
-    (Hint: look at the variable types and think about column _names_.)
+    <span class="question">(Hint: look at the variable types and think about column _names_.)</span>
     
-    Both `spread()` and `gather()` have a `convert` argument. What does it 
-    do?
+    <span class="question">Both `spread()` and `gather()` have a `convert` argument. What does it do?</span>
 
-1.  Why does this code fail?
+1.  <span class="question">Why does this code fail?</span>
 
     ```{r, error = TRUE}
     table4a %>% 
       gather(1999, 2000, key = "year", value = "cases")
     ```
 
-1.  Why does spreading this tibble fail? How could you add a new column to fix
-    the problem?
+1.  <span class="question">Why does spreading this tibble fail? How could you add a new column to fix the problem?</span>
 
     ```{r}
     people <- tribble(
@@ -258,8 +263,7 @@ As you might have guessed from the common `key` and `value` arguments, `spread()
     )
     ```
 
-1.  Tidy the simple tibble below. Do you need to spread or gather it?
-    What are the variables?
+1.  <span class="question">Tidy the simple tibble below. Do you need to spread or gather it? What are the variables?</span>
 
     ```{r}
     preg <- tribble(
