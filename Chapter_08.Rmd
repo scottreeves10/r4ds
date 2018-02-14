@@ -439,9 +439,7 @@ Time
 : `%S` integer seconds.
 : `%OS` real seconds. 
 : `%Z` Time zone (as name, e.g. `America/Chicago`). Beware of abbreviations:
-  if you're American, note that "EST" is a Canadian time zone that does not
-  have daylight savings time. It is _not_ Eastern Standard Time! We'll
-  come back to this [time zones].
+  if you're American, note that "EST" is a Canadian time zone that does not have daylight savings time. It is _not_ Eastern Standard Time! We'll come back to this [time zones].
 : `%z` (as offset from UTC, e.g. `+0800`). 
 
 Non-digits
@@ -498,15 +496,21 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
     parse_date("13-Feb-2018", "%d-%b-%Y")
     
     parse_date("18/13/February", "%y/%d/%B")
+    
+    parse_date("13.Feb.2018", "%d.%b.%Y")
+    parse_date("13\\Feb\\2018", "%d\\%b\\%Y")
+    
     ```
 
 1.  <span style="color:blue">If you live outside the US, create a new locale object that encapsulates the settings for the types of file you read most commonly.</span>
     
 1.  <span style="color:blue">What's the difference between `read_csv()` and `read_csv2()`?</span>
 
-
+    comma-delimited vs. semi-colon-delimited
   
 1.  <span style="color:blue">What are the most common encodings used in Europe? What are the most common encodings used in Asia? Do some googling to find out.</span>
+
+    This article by David C. Zentgraf speaks to encoding in general http://kunststube.net/encoding/ 
 
 1.  <span style="color:blue">Generate the correct format string to parse each of the following dates and times:</span>
     
@@ -518,6 +522,17 @@ parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
     d5 <- "12/30/14" # Dec 30, 2014
     t1 <- "1705"
     t2 <- "11:15:10.12 PM"
+    ```
+    
+    
+    ```{r}
+    parse_date(d1, "%B %d, %Y")
+    parse_date(d2, "%Y-%b-%d")
+    parse_date(d3, "%d-%b-%Y")
+    parse_date(d4, "%B %d (%Y)")
+    parse_date(d5, "%m/%d/%y")
+    parse_time(t1, "%H%M")
+    parse_time(t2, "%H:%M:%OS %p") # Seconds: "%S" (integer seconds), "%OS" (partial seconds)
     ```
 
 ## Parsing a file
