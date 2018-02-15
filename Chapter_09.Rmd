@@ -123,12 +123,109 @@ ggplot(table1, aes(year, cases)) +
     
     <span class="question">Which representation is easiest to work with? Which is hardest? Why?</span>
     
-    _I'll pass on this. Point taken. Tidy data is closely related to the idea of database normalization. Prefer to spend time proceeding with the productive ways to do things._ 
+    _ Tidy data is closely related to the idea of database normalization._ 
     
+    
+    __Rate for Table 2__
+    
+    Original Table2
+    ```{r}
+    table2
+    ```
+    
+    We need to create a tidy tibble to perform the rate calculation. To create a tibble, we need 1d vectors for the columns. To do that, we could do, for example:
+    
+    ```{r eval = FALSE}
+    countries2 <- filter(table2, type == 'cases')$country
+    years2 <- filter(table2, type == 'cases')$year
+    cases2 <- filter(table2, type == 'cases')$count
+    populations2 <- filter(table2, type == 'population')$count
+    ```
+    
+    However, for the sake of illustration, here I will use the dot placeholder `.$` _within pipes_ to create vectors to then create tibble.
+    
+    Table2 with rate
+    ```{r}
+    # filter by either cases or population to isolate rows of one or the other 
+    countries2 <- table2 %>% 
+      filter(type == "cases") %>% 
+      .$country
+    
+    # filter by either cases or population to isolate rows of one or the other 
+    years2 <- table2 %>% 
+      filter(type == "cases") %>% 
+      .$year
+    
+    cases2 <- table2 %>% 
+      filter(type == "cases") %>% 
+      .$count
+      
+    pop2 <- table2 %>% 
+      filter(type == "population") %>% 
+      .$count
+    
+    table2_rate <- tibble(
+      country = countries2,
+      year = years2,
+      rate = (cases2 / pop2) * 10000
+    )
+    
+    table2_rate
+    ```
 
+    __Rates for Tables 4a and 4b__
+    
+    Original Table4a and Table4b
+    ```{r}
+    # Table 4a (cases)
+    table4a
+    
+    # Table4b (populations)
+    table4b
+    ```
+    
+    ```{r}
+    countries4  <- table4a$country
+    cases4_1999 <- table4a$`1999`
+    cases4_2000 <- table4a$`2000`
+    pop4_1999   <- table4b$`1999`
+    pop4_2000   <- table4b$`2000`
+    
+    table4_1999_rate <- tibble(
+      country = countries4,
+      year    = 1999,
+      rate    = (cases4_1999 / pop4_1999) * 10000
+    )
+    
+    table4_2000_rate <- tibble(
+      country = countries4,
+      year    = 2000,
+      rate    = (cases4_2000 / pop4_2000) * 10000
+    )
+    
+    table4_1999_rate
+    table4_2000_rate
+    
+    ```
+    
+    
 1.  <span class="question">Recreate the plot showing change in cases over time using `table2`instead of `table1`. What do you need to do first?</span>
 
-    _As above_
+    ```{r}
+    table2
+    
+    ```
+
+    ```{r}
+    # Visualise table2 cases over time
+    
+    ggplot(data = filter(table2, type == "cases"), mapping = aes(year, count)) +
+      geom_line(aes(group = country, color = country)) +
+      geom_point(aes(color = country)) +
+      labs(y = 'cases') +
+      scale_x_continuous(breaks = (c(1999,2000)))
+    
+    ```
 
 ## Spreading and gathering
 
@@ -178,7 +275,7 @@ The columns to gather are specified with `dplyr::select()` style notation. Here 
 knitr::include_graphics("images/tidy-9.png")
 ```
 
-In the final result, <span class="emph">the gathered columns are dropped</span>, and we get <span class="emph">new `key` and `value` columns<span/>. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
+In the final result, <span class="emph">the gathered columns are dropped</span>, and we get <span class="emph">new `key` and `value` columns</span>. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure \@ref(fig:tidy-gather). We can use `gather()` to tidy `table4b` in a similar fashion. The only difference is the variable stored in the cell values:
 
 ```{r}
 table4b %>% 
