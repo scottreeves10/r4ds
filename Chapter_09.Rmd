@@ -590,12 +590,17 @@ table5 %>%
     ```
 
 1.  <span class="question">Compare and contrast `separate()` and `extract()`.  Why are there three variations of separation (by position, by separator, and with groups), but only one unite?</span>
-
+   
+    extract() has a `regex` argument - a regular expression used to extract the desired values.
+   
+    seperate() has a `sep` argument - If character, is interpreted as a regular expression. If numeric, interpreted as positions to split at. It also has the `extra` and `fill` arguments.
+    
+    There are more versions (three) of separation because there are numerous ways needed to spearate columns given various situations, but essentially only one way needed to unite columns.
 
 
 ## Missing values
 
-Changing the representation of a dataset brings up an important subtlety of missing values. Surprisingly, a value can be missing in one of two possible ways:
+Changing the representation of a dataset brings up an important subtlety of missing values. Surprisingly, a <span = "emph">value can be missing in one of two possible ways</span>:
 
 * __Explicitly__, i.e. flagged with `NA`.
 * __Implicitly__, i.e. simply not present in the data.
@@ -608,6 +613,7 @@ stocks <- tibble(
   qtr    = c(   1,    2,    3,    4,    2,    3,    4),
   return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
 )
+
 ```
 
 There are two missing values in this dataset:
@@ -635,6 +641,8 @@ stocks %>%
   gather(year, return, `2015`:`2016`, na.rm = TRUE)
 ```
 
+#### complete()
+
 Another important tool for making missing values explicit in tidy data is `complete()`:
 
 ```{r}
@@ -656,6 +664,8 @@ treatment <- tribble(
 )
 ```
 
+#### fill()
+
 You can fill in these missing values with `fill()`. It takes a set of columns where you want missing values to be replaced by the most recent non-missing value (sometimes called last observation carried forward).
 
 ```{r}
@@ -665,9 +675,25 @@ treatment %>%
 
 ### Exercises
 
-1.  Compare and contrast the `fill` arguments to `spread()` and `complete()`. 
+1.  <span class="question">Compare and contrast the `fill` arguments to `spread()` and `complete()`.</span> 
 
-1.  What does the direction argument to `fill()` do?
+    `spread(fill = NA)`
+    
+        Spread a key-value pair across multiple columns.
+    
+        If set, missing values will be replaced with this value. Note that there are two types of missingness in the input: explicit missing values (i.e. NA), and implicit missings, rows that simply aren't present. Both types of missing value will be replaced by fill.
+    
+    `complete(fill = list())`
+    
+        Complete a data frame with missing combinations of data.
+        
+        A named list that for each variable supplies a single value to use instead of NA for missing combinations.
+
+1.  <span class="question">What does the direction argument to `fill()` do?</span>
+    
+    `fill(data, ..., .direction = c("down", "up"))`
+
+        .direction - Direction in which to fill missing values. Currently either "down" (the default) or "up".
 
 ## Case Study
 
@@ -784,19 +810,52 @@ who %>%
 
 ### Exercises
 
-1.  In this case study I set `na.rm = TRUE` just to make it easier to
-    check that we had the correct values. Is this reasonable? Think about
-    how missing values are represented in this dataset. Are there implicit
-    missing values? What's the difference between an `NA` and zero? 
+1.  <span class="question">In this case study I set `na.rm = TRUE` just to make it easier to check that we had the correct values. Is this reasonable? Think about how missing values are represented in this dataset. Are there implicit missing values? What's the difference between an `NA` and zero?</span>
 
-1.  What happens if you neglect the `mutate()` step?
+    Yes, there are implicit missing values since data has not been collected for all years for all countries. 
+    
+    ```{r}
+    who %>% 
+      group_by(country, year) %>% 
+      summarize(n=n()) %>% 
+      ggplot(aes(country)) +
+      geom_bar() +
+      coord_flip()
+    ```
+    
+ 
+    ```{r}
+    who %>% 
+      group_by(country) %>% 
+      summarise(n=n()) %>%
+      arrange((n))
+    ```
+
+
+1.  <span class="question">What happens if you neglect the `mutate()` step?</span>
     (`mutate(key = stringr::str_replace(key, "newrel", "new_rel"))`)
+    
+    The separate operation will fail due to some values lacking the necessary underscore which, in this case, is used for sep. 
 
-1.  I claimed that `iso2` and `iso3` were redundant with `country`. 
-    Confirm this claim.
+1.  <span class="question">I claimed that `iso2` and `iso3` were redundant with `country`. Confirm this claim.</span>
 
-1.  For each country, year, and sex compute the total number of cases of 
-    TB. Make an informative visualisation of the data.
+    Confirmed. No observations returned where iso values are different when comparing values in each country group. 
+    
+    ```{r}
+    who %>% 
+      group_by(country, iso2, iso3) %>% 
+      mutate(
+        next_iso2 = lead(iso2),
+        next_iso3 = lead(iso3)
+      ) %>% 
+      filter(iso2 != next_iso2 | iso2 != next_iso2) %>% 
+      select(country, iso2, iso3)
+    
+    ```
+
+    
+    
+1.  <span class="question">For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.</span>
 
 ## Non-tidy data
 
