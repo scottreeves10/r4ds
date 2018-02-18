@@ -246,9 +246,10 @@ Typically a dataset will only suffer from one of these problems; it'll only suff
 
 ### Gathering
 
+<span class="emph"> Gather columns into rows</span>
+
 A common problem is a dataset where some of the column names are not names of variables, but _values_ of a variable. Take `table4a`: the column names `1999` and `2000` represent values of the `year` variable, and each row represents two observations, not one.
 
-<span class="emph"> Turn Columns into Rows</span>
 
 
 ```{r}
@@ -297,9 +298,10 @@ left_join(tidy4a, tidy4b)
 
 ### Spreading
 
+<span class="emph">Spread rows into columns</span>
+
 Spreading is the opposite of gathering. You use it when an observation is scattered across multiple rows. For example, take `table2`: an observation is a country in a year, but each observation is spread across two rows.
 
-<span class="emph">Turn Rows into Columns</span>
 
 
 ```{r}
@@ -452,6 +454,8 @@ So far you've learned how to tidy `table2` and `table4`, but not `table3`. `tabl
 
 ### Separate
 
+<span class="emph">Separate one column into several</span>
+
 `separate()` pulls apart one column into multiple columns, by splitting wherever a separator character appears. Take `table3`:
 
 ```{r}
@@ -499,6 +503,8 @@ table3 %>%
 ```
 
 ### Unite
+
+<span class="emph">Unite several columns into one</span>
 
 `unite()` is the inverse of `separate()`: it combines multiple columns into a single column. You'll need it much less frequently than `separate()`, but it's still a useful tool to have in your back pocket.
 
