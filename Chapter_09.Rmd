@@ -248,7 +248,8 @@ Typically a dataset will only suffer from one of these problems; it'll only suff
 
 A common problem is a dataset where some of the column names are not names of variables, but _values_ of a variable. Take `table4a`: the column names `1999` and `2000` represent values of the `year` variable, and each row represents two observations, not one.
 
-<span = class"emph"> Gather when one or more column name(s) is actually a value, and cell values are actually variables (column names)</span>
+<span class="emph"> Turn Columns into Rows</span>
+
 
 ```{r}
 table4a
@@ -298,7 +299,8 @@ left_join(tidy4a, tidy4b)
 
 Spreading is the opposite of gathering. You use it when an observation is scattered across multiple rows. For example, take `table2`: an observation is a country in a year, but each observation is spread across two rows.
 
-<span class="emph">Spread when values of one column are actually variables (column names) (the key), and their corresponding values are in some other column (the value) </span>
+<span class="emph">Turn Rows into Columns</span>
+
 
 ```{r}
 table2
