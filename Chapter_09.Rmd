@@ -799,9 +799,9 @@ I've shown you the code a piece at a time, assigning each interim result to a ne
 
 ```{r, results = "hide"}
 who %>%
-  gather(code, value, new_sp_m014:newrel_f65, na.rm = TRUE) %>% 
+  gather(code, cases, new_sp_m014:newrel_f65, na.rm = TRUE) %>% #book uses value lable instead of cases
   mutate(code = stringr::str_replace(code, "newrel", "new_rel")) %>%
-  separate(code, c("new", "var", "sexage")) %>% 
+  separate(code, c("new", "type", "sexage")) %>% # using "type" instead of "var"
   select(-new, -iso2, -iso3) %>% 
   separate(sexage, c("sex", "age"), sep = 1)
 ```
@@ -825,8 +825,8 @@ who %>%
     ```{r}
     who %>% 
       group_by(country) %>% 
-      summarise(n=n()) %>%
-      arrange((n))
+      summarise(years=n()) %>%
+      arrange((years))
     ```
 
 
@@ -853,20 +853,43 @@ who %>%
 
 1.  <span class="question">For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.</span>
 
-    __RESUME HERE__
-
     ```{r}
-    plot_who <- who %>%
-      gather(code, value, new_sp_m014:newrel_f65, na.rm = TRUE) %>% 
+    totals <- who %>%
+      gather(code, cases, new_sp_m014:newrel_f65, na.rm = TRUE) %>% 
       mutate(code = stringr::str_replace(code, "newrel", "new_rel")) %>%
-      separate(code, c("new", "var", "sexage")) %>% 
+      separate(code, c("new", "type", "sexage")) %>% 
       select(-new, -iso2, -iso3) %>% 
       separate(sexage, c("sex", "age"), sep = 1)
+    
+    totals
     ```
     
     ```{r}
-    plot_who %>% 
-      group_by(country, year, sex)
+    totals %>% 
+      group_by(country, year, sex) %>% 
+      ggplot(aes(year, fill = sex)) + 
+      geom_bar(position = "dodge")+
+      ylab("reported cases of TB")+
+      scale_fill_discrete(labels = c("female", "male"))
+      
+    ```
+
+
+    ```{r message=FALSE}
+    library(scales)
+    ```
+    
+    ```{r}
+    totals %>% 
+      #group_by(country, year, sex) %>% 
+      filter(year == 2012, cases > 5000) %>% 
+      ggplot(aes(x = reorder(country, cases, FUN = sum), y = cases, fill = sex)) + 
+      geom_bar(stat = "identity", position = "stack")+
+      ylab("Reported cases of TB > 5000 in 2012") +
+      xlab("Country") +
+      coord_flip()+
+      scale_y_continuous(labels=comma) +
+      scale_fill_discrete(labels = c("female", "male"))
       
     ```
 
@@ -878,7 +901,7 @@ Before we continue on to other topics, it's worth talking briefly about non-tidy
   advantages.
   
 * Specialised fields have evolved their own conventions for storing data
-  that may be quite different to the conventions of  tidy data.
+  that may be quite different to the conventions of tidy data.
 
 Either of these reasons means you'll need something other than a tibble (or data frame). If your data does fit naturally into a rectangular structure composed of observations and variables, I think tidy data should be your default choice. But there are good reasons to use other structures; tidy data is not the only way.
 
