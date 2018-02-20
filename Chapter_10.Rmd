@@ -130,7 +130,7 @@ For nycflights13:
 
 ## Keys
 
-The variables used to connect each pair of tables are called __keys__. A key is a variable (or set of variables) that uniquely identifies an observation. In simple cases, a single variable is sufficient to identify an observation. For example, each plane is uniquely identified by its `tailnum`. In other cases, multiple variables may be needed. For example, to identify an observation in `weather` you need five variables: `year`, `month`, `day`, `hour`, and `origin`.
+The variables used to connect each pair of tables are called __keys__. A key is a variable (or set of variables) that <span class="emph">uniquely identifies an observation</span>. In simple cases, a single variable is sufficient to identify an observation. For example, each plane is uniquely identified by its `tailnum`. In other cases, multiple variables may be needed. For example, to identify an observation in `weather` you need five variables: `year`, `month`, `day`, `hour`, and `origin`.
 
 There are two types of keys:
 
@@ -144,7 +144,7 @@ There are two types of keys:
 
 A variable can be both a primary key _and_ a foreign key. For example, `origin` is part of the `weather` primary key, and is also a foreign key for the `airport` table.
 
-Once you've identified the primary keys in your tables, it's good practice to verify that they do indeed uniquely identify each observation. One way to do that is to `count()` the primary keys and look for entries where `n` is greater than one:
+Once you've identified the primary keys in your tables, <span class="emph">it's good practice to verify that they do indeed uniquely identify each observation</span>. One way to do that is to `count()` the primary keys and look for entries where `n` is greater than one:
 
 ```{r}
 planes %>% 
@@ -168,13 +168,20 @@ flights %>%
   filter(n > 1)
 ```
 
-When starting to work with this data, I had naively assumed that each flight number would be only used once per day: that would make it much easier to communicate problems with a specific flight. Unfortunately that is not the case! If a table lacks a primary key, it's sometimes useful to add one with `mutate()` and `row_number()`. That makes it easier to match observations if you've done some filtering and want to check back in with the original data. This is called a __surrogate key__.
+When starting to work with this data, I had naively assumed that each flight number would be only used once per day: that would make it much easier to communicate problems with a specific flight. Unfortunately that is not the case! <span class="emph">If a table lacks a primary key, it's sometimes useful to add one with `mutate()` and `row_number()`</span>. That makes it easier to match observations if you've done some filtering and want to check back in with the original data. This is called a __surrogate key__.
 
 A primary key and the corresponding foreign key in another table form a __relation__. Relations are typically one-to-many. For example, each flight has one plane, but each plane has many flights. In other data, you'll occasionally see a 1-to-1 relationship. You can think of this as a special case of 1-to-many. You can model many-to-many relations with a many-to-1 relation plus a 1-to-many relation. For example, in this data there's a many-to-many relationship between airlines and airports: each airline flies to many airports; each airport hosts many airlines.
 
 ### Exercises
 
 1.  Add a surrogate key to `flights`.
+    
+    ```{r}
+    flights %>% 
+      mutate(flights_uid = row_number()) %>%      # surrogate key
+      select(flights_uid, everything()) %>%       # show results...
+      glimpse()
+    ```
 
 1.  Identify the keys in the following datasets
 
