@@ -193,14 +193,86 @@ A primary key and the corresponding foreign key in another table form a __relati
     
     <span class="question">(You might need to install some packages and read some documentation.)</span>
     
+    dataset|key
+    --------|------------------------------
+    `Lahman::Batting`|playerID, yearID, stint
+    `babynames::babynames`|year, sex, name
+    `nasaweather::atmos`|lat, long, year, month
+    `fueleconomy::vehicles`|id
+    `ggplot2::diamonds`|no key in original table
+    
+    
     ```{r}
-    colnames(Lahman::Batting)
+    library(Lahman)
+    
+    colnames(Batting)
     ```
 
     ```{r}
-    Lahman::Batting %>%
+    Batting %>%
       count(playerID, yearID, stint) %>% 
       filter(n > 1)
+    ```
+
+    ```{r message=FALSE, warning=FALSE}
+    library(babynames)
+    ```
+    
+    ```{r}
+    colnames(babynames)
+    
+    head(babynames)
+    tail(babynames)
+    ```
+
+    Note re: the output of `count()`: If the data already already has a column named n, the output column will be called nn. If the table already has columns called n and nn then the column returned will be nnn, and so on.
+
+    ```{r}
+    babynames %>%
+      count(year, sex, name) %>% 
+      filter(nn > 1)
+
+    ```
+    ```{r message=FALSE, warning=FALSE}
+    library(nasaweather)
+    ```
+    
+    ```{r}
+    colnames(atmos)
+    ```
+    
+    ```{r}
+    head(atmos)
+    ```
+    
+    ```{r}
+    atmos %>%  
+      count(lat, long, year, month) %>% 
+      filter(n > 1)
+    ```
+
+    ```{r message=FALSE, warning=FALSE}
+    library(fueleconomy)
+    ```
+
+    ```{r}
+    colnames(vehicles)
+    ```
+
+    ```{r}
+    head(vehicles)
+    ```
+
+    ```{r}
+    vehicles %>% count(id) %>% filter(n > 1)
+    ```
+
+    ```{r}
+    colnames(diamonds)
+    ```
+
+    ```{r}
+    head(diamonds)
     ```
 
 1.  <span class="question">Draw a diagram illustrating the connections between the `Batting`,`Master`, and `Salaries` tables in the Lahman package. Draw another diagram that shows the relationship between `Master`, `Managers`, `AwardsManagers`.
