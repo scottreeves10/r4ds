@@ -125,7 +125,7 @@ For nycflights13:
 
 1.  <span class="question">We know that some days of the year are "special", and fewer people than usual fly on them. How might you represent that data as a data frame? What would be the primary keys of that table? How would it connect to the existing tables?</span>
 
-    New table `special_days` with passenger_volume, including and connected by year, month day. More granularly it could include and be conneted by faa in airports, etc. 
+    That data may be rpresented as a data frame with a new table perhaps called `special_days` with passenger_volume, including and connected by year, month day. More granularly it could include and be conneted by faa in airports, etc. 
 
 
 ## Keys
@@ -174,16 +174,16 @@ A primary key and the corresponding foreign key in another table form a __relati
 
 ### Exercises
 
-1.  Add a surrogate key to `flights`.
+1.  <span class="question">Add a surrogate key to `flights`.</span>
     
     ```{r}
     flights %>% 
-      mutate(flights_uid = row_number()) %>%      # surrogate key
-      select(flights_uid, everything()) %>%       # show results...
-      glimpse()
+      mutate(uid = row_number()) %>%      # surrogate key
+      select(uid, everything()) %>%       # show results...
+      head()
     ```
 
-1.  Identify the keys in the following datasets
+1.  <span class="question">Identify the keys in the following datasets</span>
 
     1.  `Lahman::Batting`,
     1.  `babynames::babynames`
@@ -191,14 +191,21 @@ A primary key and the corresponding foreign key in another table form a __relati
     1.  `fueleconomy::vehicles`
     1.  `ggplot2::diamonds`
     
-    (You might need to install some packages and read some documentation.)
+    <span class="question">(You might need to install some packages and read some documentation.)</span>
+    
+    ```{r}
+    colnames(Lahman::Batting)
+    ```
 
-1.  Draw a diagram illustrating the connections between the `Batting`,
-    `Master`, and `Salaries` tables in the Lahman package. Draw another diagram
-    that shows the relationship between `Master`, `Managers`, `AwardsManagers`.
+    ```{r}
+    Lahman::Batting %>%
+      count(playerID, yearID, stint) %>% 
+      filter(n > 1)
+    ```
 
-    How would you characterise the relationship between the `Batting`,
-    `Pitching`, and `Fielding` tables?
+1.  <span class="question">Draw a diagram illustrating the connections between the `Batting`,`Master`, and `Salaries` tables in the Lahman package. Draw another diagram that shows the relationship between `Master`, `Managers`, `AwardsManagers`.
+
+    <span class="question">How would you characterise the relationship between the `Batting`,`Pitching`, and `Fielding` tables?</span>
 
 ## Mutating joins {#mutating-joins}
 
