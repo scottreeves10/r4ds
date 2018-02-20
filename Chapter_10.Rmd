@@ -225,7 +225,7 @@ A primary key and the corresponding foreign key in another table form a __relati
     tail(babynames)
     ```
 
-    Note re: the output of `count()`: If the data already already has a column named n, the output column will be called nn. If the table already has columns called n and nn then the column returned will be nnn, and so on.
+    <span class="emph">Note re: the output of `count()`: If the data already already has a column named n, the output column will be called nn. If the table already has columns called n and nn then the column returned will be nnn, and so on.</span>
 
     ```{r}
     babynames %>%
