@@ -294,7 +294,7 @@ A primary key and the corresponding foreign key in another table form a __relati
 
 The first tool we'll look at for combining a pair of tables is the __mutating join__. A mutating join allows you to combine variables from two tables. It first matches observations by their keys, then copies across variables from one table to the other.
 
-Like `mutate()`, the join functions add variables to the right, so if you have a lot of variables already, the new variables won't get printed out. For these examples, we'll make it easier to see what's going on in the examples by creating a narrower dataset:
+Like `mutate()`, the join functions add variables to the right, so if you have a lot of variables already, the new variables won't get printed out. _For these examples, we'll make it easier to see what's going on in the examples by creating a narrower dataset_:
 
 ```{r}
 flights2 <- flights %>% 
@@ -304,7 +304,7 @@ flights2
 
 (Remember, when you're in RStudio, you can also use `View()` to avoid this problem.)
 
-Imagine you want to add the full airline name to the `flights2` data. You can combine the `airlines` and `flights2` data frames with `left_join()`:
+Imagine you want to add the full airline name to the `flights2` data. You can combine the `airlines` and `flights2` data frames with <span class="emph">`left_join()`:</span>
 
 ```{r}
 flights2 %>%
@@ -322,7 +322,7 @@ flights2 %>%
 
 But this is hard to generalise when you need to match multiple variables, and takes close reading to figure out the overall intent.
 
-The following sections explain, in detail, how mutating joins work. You'll start by learning a useful visual representation of joins. We'll then use that to explain the four mutating join functions: the inner join, and the three outer joins. When working with real data, keys don't always uniquely identify observations, so next we'll talk about what happens when there isn't a unique match. Finally, you'll learn how to tell dplyr which variables are the keys for a given join.
+The following sections explain, in detail, how mutating joins work. You'll start by learning a useful visual representation of joins. We'll then use that to explain the <span class="emph">four mutating join functions:</span> the inner join, and the three outer joins. When working with real data, keys don't always uniquely identify observations, so next we'll talk about what happens when there isn't a unique match. Finally, you'll learn how to tell dplyr which variables are the keys for a given join.
 
 ### Understanding joins
 
@@ -364,7 +364,7 @@ knitr::include_graphics("diagrams/join-inner.png")
 
 ### Inner join {#inner-join}
 
-The simplest type of join is the __inner join__. An inner join matches pairs of observations whenever their keys are equal:
+The simplest type of join is the __inner join__. <span class="emph">An inner join matches pairs of observations whenever their keys are equal:</span>
 
 ```{r, echo = FALSE, out.width = NULL}
 knitr::include_graphics("diagrams/join-inner.png")
@@ -379,11 +379,11 @@ x %>%
   inner_join(y, by = "key")
 ```
 
-The most important property of an inner join is that unmatched rows are not included in the result. This means that generally inner joins are usually not appropriate for use in analysis because it's too easy to lose observations.
+<span class = "emph">The most important property of an inner join is that unmatched rows are not included in the result.</span> This means that generally inner joins are usually not appropriate for use in analysis because it's too easy to lose observations.
 
 ### Outer joins {#outer-join}
 
-An inner join keeps observations that appear in both tables. An __outer join__ keeps observations that appear in at least one of the tables. There are three types of outer joins:
+An inner join keeps observations that appear in both tables. <span class = "emph">An __outer join__ keeps observations that appear in at least one of the tables.</span> There are three types of outer joins:
 
 * A __left join__ keeps all observations in `x`.
 * A __right join__ keeps all observations in `y`.
@@ -397,7 +397,7 @@ Graphically, that looks like:
 knitr::include_graphics("diagrams/join-outer.png")
 ```
 
-The most commonly used join is the left join: you use this whenever you look up additional data from another table, because it preserves the original observations even when there isn't a match. The left join should be your default join: use it unless you have a strong reason to prefer one of the others.
+The most commonly used join is the left join: you use this whenever you look up additional data from another table, because it preserves the original observations even when there isn't a match. <span class = "emph">The left join should be your default join: use it unless you have a strong reason to prefer one of the others.</span>
 
 Another way to depict the different types of joins is with a Venn diagram:
 
