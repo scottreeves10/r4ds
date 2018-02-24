@@ -134,13 +134,9 @@ The variables used to connect each pair of tables are called __keys__. A key is 
 
 There are two types of keys:
 
-* A __primary key__ uniquely identifies an observation in its own table.
-  For example, `planes$tailnum` is a primary key because it uniquely identifies
-  each plane in the `planes` table.
+* A __primary key__ uniquely identifies an observation in its own table.For example, `planes$tailnum` is a primary key because it uniquely identifies each plane in the `planes` table.
 
-* A __foreign key__ uniquely identifies an observation in another table.
-  For example, the `flights$tailnum` is a foreign key because it appears in the 
-  `flights` table where it matches each flight to a unique plane.
+* A __foreign key__ uniquely identifies an observation in another table. For example, the `flights$tailnum` is a foreign key because it appears in the `flights` table where it matches each flight to a unique plane.
 
 A variable can be both a primary key _and_ a foreign key. For example, `origin` is part of the `weather` primary key, and is also a foreign key for the `airport` table.
 
@@ -207,16 +203,19 @@ A primary key and the corresponding foreign key in another table form a __relati
     
     colnames(Batting)
     ```
-
+    
+    
     ```{r}
     Batting %>%
       count(playerID, yearID, stint) %>% 
-      filter(n > 1)
+      filter(n > 2)
     ```
-
+    
+    
     ```{r message=FALSE, warning=FALSE}
     library(babynames)
     ```
+    
     
     ```{r}
     colnames(babynames)
@@ -277,7 +276,19 @@ A primary key and the corresponding foreign key in another table form a __relati
 
 1.  <span class="question">Draw a diagram illustrating the connections between the `Batting`,`Master`, and `Salaries` tables in the Lahman package. Draw another diagram that shows the relationship between `Master`, `Managers`, `AwardsManagers`.
 
+    `Master`connects to `Batting` and `Salaries` via `playerID`
+    
+    Similarly, `Master`connects to `Managers` and `AwardsManagers' via `playerID`. 
+    
+    ```{r, echo = FALSE}
+    knitr::include_graphics("diagrams/mydiagrams/keys_1.png")
+    ```
+
     <span class="question">How would you characterise the relationship between the `Batting`,`Pitching`, and `Fielding` tables?</span>
+    
+    There is no direct relationship. However, they all contain observations related by and to master through playerId. 
+    
+    
 
 ## Mutating joins {#mutating-joins}
 
@@ -468,28 +479,20 @@ So far, the pairs of tables have always been joined by a single variable, and th
       left_join(weather)
     ```
 
-  * A character vector, `by = "x"`. This is like a natural join, but uses only
-    some of the common variables. For example, `flights` and `planes` have
-    `year` variables, but they mean different things so we only want to join by
-    `tailnum`.
+  * A character vector, `by = "x"`. This is like a natural join, but uses only some of the common variables. For example, `flights` and `planes` have `year` variables, but they mean different things so we only want to join by `tailnum`.
 
     ```{r}
     flights2 %>% 
       left_join(planes, by = "tailnum")
     ```
 
-    Note that the `year` variables (which appear in both input data frames,
-    but are not constrained to be equal) are disambiguated in the output with
-    a suffix.
+    Note that the `year` variables (which appear in both input data frames, but are not constrained to be equal) are disambiguated in the output with a suffix.
 
   * A named character vector: `by = c("a" = "b")`. This will
     match variable `a` in table `x` to variable `b` in table `y`. The
     variables from `x` will be used in the output.
 
-    For example, if we want to draw a map we need to combine the flights data
-    with the airports data which contains the location (`lat` and `long`) of
-    each airport. Each flight has an origin and destination `airport`, so we
-    need to specify which one we want to join to:
+    For example, if we want to draw a map we need to combine the flights data with the airports data which contains the location (`lat` and `long`) of each airport. Each flight has an origin and destination `airport`, so we need to specify which one we want to join to:
 
     ```{r}
     flights2 %>% 
@@ -501,9 +504,7 @@ So far, the pairs of tables have always been joined by a single variable, and th
 
 ### Exercises
 
-1.  Compute the average delay by destination, then join on the `airports`
-    data frame so you can show the spatial distribution of delays. Here's an
-    easy way to draw a map of the United States:
+1.  Compute the average delay by destination, then join on the `airports` data frame so you can show the spatial distribution of delays. Here's an easy way to draw a map of the United States:
 
     ```{r, eval = FALSE}
     airports %>%
