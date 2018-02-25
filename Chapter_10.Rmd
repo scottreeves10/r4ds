@@ -419,9 +419,7 @@ So far all the diagrams have assumed that the keys are unique. But that's not al
     knitr::include_graphics("diagrams/join-one-to-many.png")
     ```
 
-    Note that I've put the key column in a slightly different position
-    in the output. This reflects that the key is a primary key in `y`
-    and a foreign key in `x`.
+    Note that I've put the key column in a slightly different position in the output. This reflects that the key is a primary key in `y` and a foreign key in `x`.
 
     ```{r}
     x <- tribble(
@@ -439,9 +437,7 @@ So far all the diagrams have assumed that the keys are unique. But that's not al
     left_join(x, y, by = "key")
     ```
 
-1.  Both tables have duplicate keys. This is usually an error because in
-    neither table do the keys uniquely identify an observation. When you join
-    duplicated keys, you get all possible combinations, the Cartesian product:
+1.  Both tables have duplicate keys. This is usually an error because in neither table do the keys uniquely identify an observation. <span class = "emph">When you join duplicated keys, you get all possible combinations, the Cartesian product:</span>
 
     ```{r, echo = FALSE, out.width = NULL}
     knitr::include_graphics("diagrams/join-many-to-many.png")
@@ -469,10 +465,7 @@ So far all the diagrams have assumed that the keys are unique. But that's not al
 
 So far, the pairs of tables have always been joined by a single variable, and that variable has the same name in both tables. That constraint was encoded by `by = "key"`. You can use other values for `by` to connect the tables in other ways:
 
-  * The default, `by = NULL`, uses all variables that appear in both tables,
-    the so called __natural__ join. For example, the flights and weather tables
-    match on their common variables: `year`, `month`, `day`, `hour` and
-    `origin`.
+  * <span class="emph">The default, `by = NULL`, uses all variables that appear in both tables, the so called __natural__ join.</span> For example, the flights and weather tables match on their common variables: `year`, `month`, `day`, `hour` and `origin`.
 
     ```{r}
     flights2 %>% 
@@ -489,8 +482,7 @@ So far, the pairs of tables have always been joined by a single variable, and th
     Note that the `year` variables (which appear in both input data frames, but are not constrained to be equal) are disambiguated in the output with a suffix.
 
   * A named character vector: `by = c("a" = "b")`. This will
-    match variable `a` in table `x` to variable `b` in table `y`. The
-    variables from `x` will be used in the output.
+    match variable `a` in table `x` to variable `b` in table `y`. The variables from `x` will be used in the output.
 
     For example, if we want to draw a map we need to combine the flights data with the airports data which contains the location (`lat` and `long`) of each airport. Each flight has an origin and destination `airport`, so we need to specify which one we want to join to:
 
